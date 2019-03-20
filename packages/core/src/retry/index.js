@@ -56,7 +56,7 @@ function handleRetry(context, nextComponent, retryStrategy, retryAttempts, previ
     }
 
     retryAttempts++
-    const retryDelay = previousDelay && retryStrategy._escalateRetryDelayWith
+    const retryDelay = previousDelay !== undefined && retryStrategy._escalateRetryDelayWith
       ? retryStrategy._escalateRetryDelayWith(previousDelay, retryStrategy._delayRetryForMilliseconds, copiedEnvironment, retryAttempts, retryStrategy._maxAutoRetries)
       : retryStrategy._delayRetryForMilliseconds
 

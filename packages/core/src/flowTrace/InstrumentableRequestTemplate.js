@@ -60,7 +60,10 @@ class InstrumentableRequestTemplate extends AutoBinder {
 
       return next()
         .then(handlePipelineCompletion)
-        .catch(handlePipelineCompletion)
+        .catch(async err => {
+          await handlePipelineCompletion()
+          throw err
+        })
     })
 
     return this._createRequestTemplate()
