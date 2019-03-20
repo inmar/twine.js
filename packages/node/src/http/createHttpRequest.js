@@ -25,8 +25,6 @@ module.exports = function createHttpRequest(requestOptions, context) {
     timeout:  requestOptions.timeout
   }
 
-  console.log(options)
-
   return new Promise((resolve, reject) => {
     const request = requester.request(options)
       .on('response', resolve)

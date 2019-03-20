@@ -48,7 +48,6 @@ class Request extends TwineBuilder {
             throw new TwineError(`Twine Pipeline RemoteFaulted: ${context.environment['twine.FaultException']}`, context)
           }
 
-          console.log(statusCode)
           throw new TwineError(`No handler exists for status code ${statusCode} in HTTP response.`, context)
         }
       })
