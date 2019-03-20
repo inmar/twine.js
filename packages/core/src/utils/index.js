@@ -22,10 +22,13 @@ function assert(condition, errMessage, context = null, twineBuilder = null) {
  * @param {TwineBuilderLike} twineBuilder - (optional) The TwineBuilder component this error originated from for debug info
  */
 function buildErrorMessage(message, context = null, twineBuilder = null) {
+  //Accepts either a full twine context, or an environment context.
+  const environment = context && (context.environment || context)
+
   let errMessage
-  if (context) {
-    const serviceName = context.environment['twine.ResourceServiceName']
-    const templateName = context.environment['twine.RequestTemplateName']
+  if (environment) {
+    const serviceName = environment['twine.ResourceServiceName']
+    const templateName = environment['twine.RequestTemplateName']
     if (templateName) {
       errMessage = `[${serviceName} :: ${templateName}] ${message}`
     }

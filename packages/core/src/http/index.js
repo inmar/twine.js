@@ -684,6 +684,10 @@ function createHTTPResourceServiceModule(context, next) {
         context.environment['twine.FaultException'] = new TwineError(
           `Remote host returned a ${response.statusCode} status from ${requestOptions.method} to ${requestOptions.url}`, context)
       }
+      else {
+        context.environment['twine.IsRemoteFaulted'] = false
+        context.environment['twine.FaultException'] = null
+      }
 
       return response.getContent()
     })
