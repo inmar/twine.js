@@ -16,8 +16,8 @@ const flowTraceHelpers = require('./helpers')
  *   const headers = request.headers
  *
  *   const flowTraceContext = {
- *     originId: headers['X-B3-TraceId'],
- *     parentId: headers['X-B3-SpanId']
+ *     originId: headers['x-b3-traceid'],
+ *     parentId: headers['x-b3-spanid']
  *   }
  * }
  *

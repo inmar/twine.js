@@ -32,8 +32,8 @@ function setFlowTraceValues(context, originId, parentId, requestId) {
 
   const requestHeaders = environment["http.RequestHeaders"]
   if (requestHeaders) {
-    requestHeaders["X-B3-TraceId"] = originId
-    requestHeaders["X-B3-SpanId"] = requestId
+    requestHeaders["x-b3-traceid"] = originId
+    requestHeaders["x-b3-spanid"]  = requestId
   }
 }
 
