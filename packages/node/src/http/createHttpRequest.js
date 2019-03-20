@@ -2,9 +2,12 @@ const http  = require('http')
 const https = require('https')
 const zlib  = require('zlib')
 
+const TwineError = require('@inmar/twine-core/src/utils/TwineError')
+
 /**
  *
  * @param {RequestOptions} requestOptions
+ * @param {Object} context
  *
  * @returns {Promise<RequestResponse>}
  */
@@ -14,13 +17,18 @@ module.exports = function createHttpRequest(requestOptions, context) {
     : http
 
   const options = {
-    method:  requestOptions.method,
-    headers: requestOptions.headers,
-    timeout: requestOptions.timeout
+    hostname: requestOptions.host,
+    port:     requestOptions.port,
+    path:     '/' + requestOptions.path, //Node requires a leading `/`
+    method:   requestOptions.method,
+    headers:  requestOptions.headers,
+    timeout:  requestOptions.timeout
   }
 
+  console.log(options)
+
   return new Promise((resolve, reject) => {
-    const request = requester.request(requestOptions.url, options)
+    const request = requester.request(options)
       .on('response', resolve)
       .on('error', reject)
       .on('timeout', () => {

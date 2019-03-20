@@ -1,5 +1,4 @@
-const AbstractPlatform  = require('../../shared/platform/AbstractPlatform')
-
+const AbstractPlatform  = require('@inmar/twine-core/src/platform/AbstractPlatform')
 const createHttpRequest = require('../http/createHttpRequest')
 
 class NodePlatform extends AbstractPlatform {

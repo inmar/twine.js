@@ -1,0 +1,6 @@
+{
+  "name": "twine.js",
+  "devDependencies": {
+    "lerna": "^3.13.1"
+  }
+}

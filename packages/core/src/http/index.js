@@ -1,10 +1,9 @@
-import ResourceService from "../requestResponse/ResourceService";
-
+const ResourceService = require('../requestResponse/ResourceService')
 const RequestTemplate = require('../requestResponse/RequestTemplate')
 const Request         = require('../requestResponse/Request')
 const TwineError      = require('../utils/TwineError')
 const HttpHandler     = require('./HttpHandler')
-const Platform        = require('../platform').getPlatform()
+const Platform        = require('../platform')
 
 const { resolveProvider } = require('../utils')
 
@@ -590,7 +589,7 @@ function addBasicAuth(twineBuilder, usernameProvider, passwordProvider) {
       resolveProvider(passwordProvider)
     ])
       .then(([username, password]) => {
-        const token = Platform.base64Encode(`${username}:${password}`)
+        const token = Platform.getPlatform().base64Encode(`${username}:${password}`)
         addHeaderToContext(context, 'Authorization', `Basic ${token}`)
       })
       .then(next)
@@ -646,13 +645,14 @@ function createHTTPResourceServiceModule(context, next) {
    * @type {RequestOptions}
    */
   const requestOptions = {
-    method:  context.environment['http.RequestMethod'],
-    host:    context.environment['twine.Host'],
-    port:    context.environment['twine.Port'],
-    path:    context.environment['http.RequestPath'],
-    headers: context.environment['http.RequestHeaders'],
-    timeout: context.environment['http.RequestTimeout'] || 0,
-    body:    context.environment['http.RequestBody'],
+    protocol: context.environment['http.RequestProtocol'],
+    method:   context.environment['http.RequestMethod'],
+    host:     context.environment['twine.Host'],
+    port:     context.environment['twine.Port'],
+    path:     context.environment['http.RequestPath'],
+    headers:  context.environment['http.RequestHeaders'],
+    timeout:  context.environment['http.RequestTimeout'] || 0,
+    body:     context.environment['http.RequestBody'],
   }
 
   //Remove any trailing slashes that could conflict with the path
@@ -673,7 +673,7 @@ function createHTTPResourceServiceModule(context, next) {
     requestOptions.path ? `/${requestOptions.path}` : '',
   ].join('')
 
-  return Platform.createHttpRequest(requestOptions, context)
+  return Platform.getPlatform().createHttpRequest(requestOptions, context)
     .then(response => {
       context.environment["http.ResponseHeaders"]      = response.headers
       context.environment["http.ResponseStatusCode"]   = response.statusCode
@@ -691,6 +691,10 @@ function createHTTPResourceServiceModule(context, next) {
       context.environment['http.ResponseBody'] = responseData
     })
     .catch(err => {
+      if (err && err.stack) {
+        err = err.stack
+      }
+
       context.environment['http.ResponseBody']         = null
       context.environment['http.ResponseHeaders']      = {}
       context.environment['http.ResponseStatusCode']   = 0

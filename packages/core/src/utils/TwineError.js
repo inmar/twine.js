@@ -1,4 +1,4 @@
-const { buildErrorMessage } = require('./index')
+const { buildErrorMessage } = require('.')
 
 class TwineError extends Error {
   /**

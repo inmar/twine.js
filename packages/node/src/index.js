@@ -1,10 +1,10 @@
 //Setup platform specific helpers
-const Platform     = require('../shared/platform')
+const Platform     = require('../../core/src/platform')
 const NodePlatform = require('./platform')
 Platform.setPlatform(new NodePlatform())
 
-const sharedTwine      = require('../shared')
-const instrumentation  = require('./flowTrace/instrumentation')
+const sharedTwine     = require('../../core/src')
+const instrumentation = require('./flowTrace/instrumentation')
 
 module.exports = {
   ...sharedTwine,

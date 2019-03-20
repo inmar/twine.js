@@ -1,5 +1,3 @@
-const TwineError = require('./TwineError')
-
 /**
  * Simple helper to validate assumptions and throw errors if they aren't met.
  *
@@ -9,6 +7,8 @@ const TwineError = require('./TwineError')
  * @param {TwineBuilderLike} twineBuilder - (optional) The TwineBuilder (or similar) component this error originated from for debug info
  */
 function assert(condition, errMessage, context = null, twineBuilder = null) {
+  const TwineError = require('./TwineError')
+
   if (!condition) {
     throw new TwineError(errMessage, context, twineBuilder)
   }

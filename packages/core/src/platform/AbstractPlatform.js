@@ -74,3 +74,5 @@ class AbstractPlatform extends AutoBinder {
  * @property {Object} headers    - The headers returned in the response. Note: This should be a simple key-value object.
  * @property {function: Promise<string>} getContent - A promise returning function that provides the response's body content.
  */
+
+module.exports = AbstractPlatform
