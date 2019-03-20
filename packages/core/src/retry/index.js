@@ -34,7 +34,7 @@ function handleRetry(context, nextComponent, retryStrategy, retryAttempts, previ
   return nextComponent().then(() => {
 
     //Only setup additional retries when the remote is at fault and the status hasn't been handled already
-    if (!context.environment['twine.IsRemoteFaulted'] || context.environment['twine.HandlerExecuted']) {
+    if (context.environment['twine.HandlerExecuted'] || !retryStrategy._retryWhen(Object.assign({}, context.environment))) {
       return
     }
 

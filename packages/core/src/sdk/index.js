@@ -6,11 +6,11 @@ const TwineError      = require('../utils/TwineError')
  * Creates a connection object if connectionFactory exists.
  * Runs wrappedSdkCall passing context and the connection.
  *
- * @param connectionFactory {Function<Promise<*>> | Function<*> | Promise<*> | *}
+ * @param connectionFactory? {Function<Promise<*>> | Function<*> | Promise<*> | *}
  *
  * @returns {RequestTemplate}
  */
-ResourceService.prototype.usingSdk = function(connectionFactory) {
+ResourceService.prototype.usingSdk = function(connectionFactory = null) {
   if (!connectionFactory) {
     connectionFactory = Promise.resolve()
   }
