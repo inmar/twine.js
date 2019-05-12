@@ -12,6 +12,7 @@
 <h5 align="center">
   <a href="http://inmar.github.io/twine.js/">Demo</a> &nbsp;|&nbsp; 
   <a href="#installation">Installation</a> &nbsp;|&nbsp; 
+  <a href="#concepts">Concepts</a> &nbsp;|&nbsp; 
   <a href="#usage">Usage</a> &nbsp;|&nbsp;
   <a href="#api">API</a>  
 </h5>
