@@ -22,7 +22,7 @@ const AbstractCluster = require('./AbstractCluster')
  */
 ResourceService.prototype.usingLoadBalancing = function(Cluster) {
   let cluster = new Cluster(this.serviceName)
-  let index = 0
+  let index = Math.floor(Math.random() * 50) // Randomize which node is hit first
 
   function getNextNode(serviceName, nodes, context) {
     if (nodes.length === 0) {

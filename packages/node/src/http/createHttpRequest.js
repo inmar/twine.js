@@ -57,10 +57,7 @@ module.exports = function createHttpRequest(requestOptions, context) {
 }
 
 function getResponseContent(response) {
-  const contentEncoding = Object.entries(response.headers)
-    .find(([name]) => name.toLowerCase() === 'content-encoding')
-
-  const isGzipped = contentEncoding && contentEncoding[1].toLowerCase() === 'gzip'
+  const isGzipped = (response.headers['content-encoding'] || '').toLowerCase() === 'gzip'
 
   const data = []
   return new Promise((resolve, reject) => {
@@ -68,6 +65,11 @@ function getResponseContent(response) {
       .on('data', chunk => data.push(chunk))
       .on('end', () => {
         const buffer = Buffer.concat(data)
+        const contentLength = response.headers['content-length']
+        if (contentLength && +contentLength !== buffer.length) {
+          console.warn("Detected possible TCP connection cutoff due to receiving less data than what was expected based on 'content-length' header.")
+          return reject(new Error("Detected possible TCP connection cutoff due to receiving less data than what was expected based on 'content-length' header."))
+        }
 
         if(isGzipped) {
           resolve(zlib.gunzipSync(buffer))

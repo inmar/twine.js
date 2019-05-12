@@ -108,6 +108,8 @@ function ensureFlowTraceContext(context, next) {
   const requestContext = global['twine.owin.flowtrace']
 
   //If not set by Request.prototype.setFlowTraceInfo
+  //Only set the TraceId (Origin) and ParentId if there isn't one already set.
+  //If we do set it via begin/continueFlowTrace, the requestId will be set already.
   if (!context.environment['flowtrace.Origin']) {
     if (requestContext) {
       console.debug("[FlowTrace]", "Added FlowTrace info from Global request context to twine request")
@@ -117,6 +119,11 @@ function ensureFlowTraceContext(context, next) {
       console.debug("[FlowTrace]", "No FlowTrace info from request context; starting new FlowTrace")
       flowTraceHelpers.beginFlowTrace(context)
     }
+  }
+  else {
+    //If we didn't just setup new context variables for flowtrace, then we will need to create
+    // a new SpanId (flowtrace.Request). Makes sure that retries don't have the same SpanId.
+    context.environment['flowtrace.Request'] = flowTraceHelpers.generateZipkinCompatibleUUID()
   }
 
   return next()

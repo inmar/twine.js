@@ -16,7 +16,7 @@ class Receives {
     try {
       return JSON.parse(response)
     } catch (e) {
-      throw new TwineError(`Response body could not be parsed as JSON`, context)
+      throw new TwineError(`Response body could not be parsed as JSON. Error: ${e}  Response: ${response}`, context)
     }
   }
 
