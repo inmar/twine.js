@@ -1,6 +1,6 @@
 <h1 align="center">
   <img align="center" width="200" src="./assets/inmar-logo-transparent.png" alt="Inmar Inc. Logo"><br/><br/>
-  Twine.js
+  twine.js
 </h1>
 
 <h6 align="center">
@@ -30,30 +30,30 @@ npm install --save @inmar/twine-node
 ```
 
 ## Concepts
-There are a number of important concept to keep in mind when integrating Twine into your application.
+There are a number of important concept to keep in mind when integrating twine into your application.
 
 ### Pipelines
 A pipeline is a collection of [components](#Components) that execute sequentially in the order they are added to the pipeline, 
 and are split into 3 key sections: [Resource Services](#Resource-Service), [Request Templates](#Request-Template), [Requests](#Request).
-The combination of the components from these 3 sections make up a complete pipeline that is executed when Twine runs.
+The combination of the components from these 3 sections make up a complete pipeline that is executed when twine runs.
 
 #### Resource Service
 A Resource Service represents a network resource to which requests can be made. 
-Typically, this is an HTTP server, however any type of resource can function as a Resource Service as long as Twine has been provided the functionality to understand it.
+Typically, this is an HTTP server, however any type of resource can function as a Resource Service as long as twine has been provided the functionality to understand it.
 <br />(Example: PostgreSQL as a Resource Service)
 
-These are the entry point for creating a Twine Request Pipeline.
+These are the entry point for creating a twine Request Pipeline.
 
 #### Request Template
-Request Templates are children to a Resource Service, and represent the instructions telling Twine how to **repeatably** make a **specific** request to that service.
+Request Templates are children to a Resource Service, and represent the instructions telling twine how to **repeatably** make a **specific** request to that service.
 
 #### Request
-A Request is the Twine representation of a compiled [Request Template](#Request-Template) and is the terminal at which the request can have final options
-and modifiers attached before Twine executes the entire pipeline to contact the service defined by the [Resource Service](#Resource-Service)
+A Request is the twine representation of a compiled [Request Template](#Request-Template) and is the terminal at which the request can have final options
+and modifiers attached before twine executes the entire pipeline to contact the service defined by the [Resource Service](#Resource-Service)
 
 ### Components
 Components are modules or plugins that modify or add functionality to the pipeline when they are added to it.
-Components can be written by consumers of Twine to augment pipelines in ways not already included in the library.
+Components can be written by consumers of twine to augment pipelines in ways not already included in the library.
 
 ### Instrumentation
 //TODO
