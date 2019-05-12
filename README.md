@@ -14,8 +14,10 @@
   <a href="#installation">Installation</a> &nbsp;|&nbsp; 
   <a href="#concepts">Concepts</a> &nbsp;|&nbsp; 
   <a href="#usage">Usage</a> &nbsp;|&nbsp;
-  <a href="#api">API</a>  
+  <a href="#contribute">Contribute</a>
 </h5>
+
+Twine is an [IPC]() request library built around the concept of explicitness. 
 
 ## Installation
 
@@ -46,18 +48,14 @@ Typically, this is an HTTP server, however any type of resource can function as 
 These are the entry point for creating a twine Request Pipeline.
 
 #### Request Template
-Request Templates are children to a [Resource Service](#Resource-Service), and represent the instructions telling twine how to **repeatably** make a **specific** request to that service.
+Request Templates are children to a [Resource Service](#Resource-Service) and represent the instructions telling twine how to **repeatably** make a **specific** request to that service.
 
 #### Request
-A Request is the twine representation of a compiled [Request Template](#Request-Template) and is the terminal at which the request can have final options
-and modifiers attached before twine executes the entire pipeline to contact the service defined by the [Resource Service](#Resource-Service)
+A Request is the twine representation of a built [Request Template](#Request-Template) and is the terminal at which the request can have final options and modifiers attached before twine executes the entire pipeline to contact the service defined by the [Resource Service](#Resource-Service)
 
 ### Components
 Components are modules or plugins that modify or add functionality to the pipeline when they are added to it.
 Components can be written by consumers of twine to augment pipelines in ways not already included in the library.
-
-### Instrumentation
-//TODO
 
 ## Usage
 ```js
@@ -112,5 +110,28 @@ export default async function retrieveTodo(todoId) {
 }
 ```
 
-## API
-//TODO
+## Contribute
+This repository is a mono-repo containing the user-facing libraries `@inmar/twine-browser` and `@inmar/twine-node`.
+It also contains the code shared between the two platform implementations as `@inmar/twine-core`.
+
+All npm related actions like `npm install`, `npm publish`, etc are handled via a mono-repo supporting library called [lerna](https://github.com/lerna/lerna).
+`Lerna` is used to manage synchronized version bumps and package interdependence via symlinks for local development.
+
+As such, to develop this repository, `lerna` becomes an integral part for dependency management and publishing.
+
+Important Commands
+ - [lerna bootstrap](https://github.com/lerna/lerna/tree/master/commands/bootstrap#readme)
+ - [lerna add](https://github.com/lerna/lerna/tree/master/commands/add#readme)
+ - [lerna version](https://github.com/lerna/lerna/tree/master/commands/version#readme)
+ - [lerna publish](https://github.com/lerna/lerna/tree/master/commands/publish#readme)
+ 
+ ### Initial Setup
+ 
+ 1) Pull the repository
+```git
+git clone https://github.com/inmar/twine.js
+```
+
+2) Run `npm install` in the root of the repository to install `lerna`.
+As part of the root `npm install`, a `post-install` hook will instruct `lerna` to bootstrap the repository via `lerna bootstrap`.
+This will install and setup all packages and their dependencies.
