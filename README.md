@@ -10,7 +10,7 @@
 </h6>
 
 <h5 align="center">
-  <a href="http://inmar.github.io/patience_js/">Demo</a> &nbsp;|&nbsp; 
+  <a href="http://inmar.github.io/twine.js/">Demo</a> &nbsp;|&nbsp; 
   <a href="#installation">Installation</a> &nbsp;|&nbsp; 
   <a href="#usage">Usage</a> &nbsp;|&nbsp;
   <a href="#api">API</a>  
