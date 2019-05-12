@@ -45,7 +45,7 @@ Typically, this is an HTTP server, however any type of resource can function as 
 These are the entry point for creating a twine Request Pipeline.
 
 #### Request Template
-Request Templates are children to a Resource Service, and represent the instructions telling twine how to **repeatably** make a **specific** request to that service.
+Request Templates are children to a [Resource Service](#Resource-Service), and represent the instructions telling twine how to **repeatably** make a **specific** request to that service.
 
 #### Request
 A Request is the twine representation of a compiled [Request Template](#Request-Template) and is the terminal at which the request can have final options
