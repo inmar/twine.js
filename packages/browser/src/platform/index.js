@@ -4,11 +4,11 @@ const createHttpRequest = require('../http/createHttpRequest')
 
 class BrowserPlatform extends AbstractPlatform {
   base64Encode(value) {
-    return atob(value)
+    return btoa(value)
   }
 
   base64Decode(value) {
-    return btoa(value)
+    return atob(value)
   }
 
   createHttpRequest(requestOptions, context) {
