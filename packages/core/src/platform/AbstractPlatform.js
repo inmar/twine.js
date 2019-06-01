@@ -45,6 +45,30 @@ class AbstractPlatform extends AutoBinder {
   createHttpRequest(requestOptions, context) {
     throw new Error("This method is not implemented.")
   }
+
+  /**
+   * Creates a high resolution timer starting point timestamp.
+   *
+   * The entity returned by this method should not be used directly for timings, but should used in
+   * conjunction with {@link AbstractPlatform#calculateTimerDelta} to determine timing durations.
+   *
+   * @return {*} - High resolution timer timestamp
+   */
+  getTimerStart() {
+    throw new Error("This method is not implemented.")
+  }
+
+  /**
+   * Calculates the amount of time, in <b>microseconds</b>, that has passed since the provided `startTime`.
+   * The provided `startTime` should be an entity retrieved from {@link AbstractPlatform#getTimerStart}
+   *
+   * @param {*} startTime
+   *
+   * @return {number} The delta between now and the provided `startTime`, in microseconds.
+   */
+  calculateTimerDelta(startTime) {
+    throw new Error("This method is not implemented.")
+  }
 }
 
 /**

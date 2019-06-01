@@ -1,10 +1,9 @@
-const process = require('process')
-
 const RequestTemplate = require('../requestResponse/RequestTemplate')
 
 const { assert } = require('../utils')
 const AutoBinder = require('../utils/AutoBinder')
 const TwineError = require('../utils/TwineError')
+const Platform   = require('../platform')
 
 const AbstractInstrumentor = require('./instrumentation/AbstractInstrumentor')
 const flowTraceHelpers     = require('./helpers')
@@ -49,12 +48,10 @@ class InstrumentableRequestTemplate extends AutoBinder {
       const instanceId = appContext['instanceId']
 
       const timeStartedUtc = Date.now()
-      const highResolutionStartTime = process.hrtime()
+      const highResolutionStartTime = Platform.getPlatform().getTimerStart()
 
       const handlePipelineCompletion = async () => {
-        const [seconds, nanoseconds] = process.hrtime(highResolutionStartTime)
-        const microsecondDuration = Math.floor(((seconds * 1e9) + nanoseconds) / 1e3)
-
+        const microsecondDuration = Platform.getPlatform().calculateTimerDelta(highResolutionStartTime)
         await instrumentor.handleCompletedRequest(context, appName, instanceId, timeStartedUtc, microsecondDuration);
       }
 

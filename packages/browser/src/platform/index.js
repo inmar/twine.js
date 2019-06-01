@@ -14,6 +14,14 @@ class BrowserPlatform extends AbstractPlatform {
   createHttpRequest(requestOptions, context) {
     return createHttpRequest(requestOptions, context)
   }
+
+  getTimerStart() {
+    return performance.now()
+  }
+
+  calculateTimerDelta(startTime) {
+    return Math.floor((performance.now() - startTime) * 1000)
+  }
 }
 
 module.exports = BrowserPlatform

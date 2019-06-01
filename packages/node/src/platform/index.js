@@ -1,3 +1,5 @@
+const process = require('process')
+
 const AbstractPlatform  = require('@inmar/twine-core/src/platform/AbstractPlatform')
 const createHttpRequest = require('../http/createHttpRequest')
 
@@ -12,6 +14,15 @@ class NodePlatform extends AbstractPlatform {
 
   createHttpRequest(requestOptions, context) {
     return createHttpRequest(requestOptions, context)
+  }
+
+  getTimerStart() {
+    return process.hrtime()
+  }
+
+  calculateTimerDelta(startTime) {
+    const [seconds, nanoseconds] = process.hrtime(startTime)
+    return Math.floor(((seconds * 1e9) + nanoseconds) / 1e3)
   }
 }
 

@@ -18,7 +18,7 @@ module.exports = {
 
   /**
    *
-   * @param {AbstractPlatform} platform
+   * @param {AbstractPlatform} newPlatform
    */
   setPlatform(newPlatform) {
     platform = newPlatform
