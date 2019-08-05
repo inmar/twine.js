@@ -10,10 +10,9 @@
 </h6>
 
 <h5 align="center">
-  <a href="http://inmar.github.io/twine.js/">Demo</a> &nbsp;|&nbsp; 
   <a href="#installation">Installation</a> &nbsp;|&nbsp; 
-  <a href="#concepts">Concepts</a> &nbsp;|&nbsp; 
   <a href="#usage">Usage</a> &nbsp;|&nbsp;
+  <a href="#concepts">Concepts</a> &nbsp;|&nbsp; 
   <a href="#contribute">Contribute</a>
 </h5>
 
@@ -31,33 +30,6 @@ npm install --save @inmar/twine-browser
 ```
 npm install --save @inmar/twine-node
 ```
-
-## Concepts
-There are a number of important concept to keep in mind when integrating twine into your application.
-
-### Pipelines
-A pipeline is a collection of [components](#Components) that execute sequentially in the order they are added to the pipeline, 
-and are split into 3 key sections: [Resource Services](#Resource-Service), [Request Templates](#Request-Template), [Requests](#Request).
-The combination of the components from these 3 sections make up a complete pipeline that is executed when twine runs.
-
-### Components
-Components are modules or plugins that modify or add functionality to the pipeline when they are added to it.
-Components can be written by consumers of twine to augment pipelines in ways not already included in the library.
-
-A more extensive explanation with examples is [available on the wiki](https://github.com/inmar/twine.js/wiki/Components).
-
-#### Resource Service
-A Resource Service represents a network resource to which requests can be made. 
-Typically, this is an HTTP server, however any type of resource can function as a Resource Service as long as twine has been provided the functionality to understand it.
-<br />(Example: PostgreSQL as a Resource Service)
-
-These are the entry point for creating a twine Request Pipeline.
-
-#### Request Template
-Request Templates are children to a [Resource Service](#Resource-Service) and represent the instructions telling twine how to **repeatably** make a **specific** request to that service.
-
-#### Request
-A Request is the twine representation of a built [Request Template](#Request-Template) and is the terminal at which the request can have final options and modifiers attached before twine executes the entire pipeline to contact the service defined by the [Resource Service](#Resource-Service)
 
 ## Usage
 ```js
@@ -111,6 +83,33 @@ export default async function retrieveTodo(todoId) {
   throw new Error(`Failed to retrieve todo due to error: ${response.error}` )
 }
 ```
+
+## Concepts
+There are a number of important concept to keep in mind when integrating twine into your application.
+
+### Pipelines
+A pipeline is a collection of [components](#Components) that execute sequentially in the order they are added to the pipeline, 
+and are split into 3 key sections: [Resource Services](#Resource-Service), [Request Templates](#Request-Template), [Requests](#Request).
+The combination of the components from these 3 sections make up a complete pipeline that is executed when twine runs.
+
+### Components
+Components are modules or plugins that modify or add functionality to the pipeline when they are added to it.
+Components can be written by consumers of twine to augment pipelines in ways not already included in the library.
+
+A more extensive explanation with examples is [available on the wiki](https://github.com/inmar/twine.js/wiki/Components).
+
+#### Resource Service
+A Resource Service represents a network resource to which requests can be made. 
+Typically, this is an HTTP server, however any type of resource can function as a Resource Service as long as twine has been provided the functionality to understand it.
+<br />(Example: PostgreSQL as a Resource Service)
+
+These are the entry point for creating a twine Request Pipeline.
+
+#### Request Template
+Request Templates are children to a [Resource Service](#Resource-Service) and represent the instructions telling twine how to **repeatably** make a **specific** request to that service.
+
+#### Request
+A Request is the twine representation of a built [Request Template](#Request-Template) and is the terminal at which the request can have final options and modifiers attached before twine executes the entire pipeline to contact the service defined by the [Resource Service](#Resource-Service)
 
 ## Contribute
 This repository is a mono-repo containing the user-facing libraries `@inmar/twine-browser` and `@inmar/twine-node`.
