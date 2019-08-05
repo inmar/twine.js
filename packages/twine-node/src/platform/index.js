@@ -1,6 +1,6 @@
 const process = require('process')
 
-const AbstractPlatform  = require('@test/twine-core/src/platform/AbstractPlatform')
+const AbstractPlatform  = require('@inmar/twine-core/src/platform/AbstractPlatform')
 const createHttpRequest = require('../http/createHttpRequest')
 
 class NodePlatform extends AbstractPlatform {

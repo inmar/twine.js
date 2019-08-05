@@ -2,7 +2,7 @@ const http  = require('http')
 const https = require('https')
 const zlib  = require('zlib')
 
-const TwineError = require('@test/twine-core/src/utils/TwineError')
+const TwineError = require('@inmar/twine-core/src/utils/TwineError')
 
 /**
  *
