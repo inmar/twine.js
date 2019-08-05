@@ -17,7 +17,7 @@
     "url": "git+https://github.com/inmar/twine.js.git"
   },
   "author": "Austin Keener <austin.keener@inmar.com>",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/inmar/twine.js/issues"
   },

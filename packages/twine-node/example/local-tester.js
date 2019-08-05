@@ -32,7 +32,6 @@ exports.handler = async (event, context) => {
   twine.instrumentation.setGlobalInstrumentationInfo("myTestApp", "123")
 
   const req = sampleTemplate.createRequest()
-    .withHeader()
     .withParameters({id: 1})
     .execute()
 

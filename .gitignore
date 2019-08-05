@@ -2,3 +2,6 @@
 .idea/
 node_modules/
 dist/
+
+# lerna
+lerna-debug.log
