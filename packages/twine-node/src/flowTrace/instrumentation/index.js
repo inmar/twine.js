@@ -1,5 +1,5 @@
 const { assert } = require('../../../../core/src/utils')
-const { generateZipkinCompatibleUUID } = require('@inmar/twine-core/src/flowTrace/helpers')
+const { generateZipkinCompatibleUUID } = require('@test/twine-core/src/flowTrace/helpers')
 
 /**
  * A higher-order function that wraps the handler for an AWS Lambda to capture the provided event and context before

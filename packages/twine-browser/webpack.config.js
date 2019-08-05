@@ -29,7 +29,7 @@ const config = {
         test: /\.js$/,
         include: [
           path.resolve(__dirname, 'src'),
-          path.resolve(__dirname, '..', 'core', 'src')
+          path.resolve(__dirname, '..', 'twine-core', 'src')
         ],
         // exclude: /node_modules/,
         use: {

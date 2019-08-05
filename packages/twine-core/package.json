@@ -1,10 +1,16 @@
 {
-  "name": "@inmar/twine-core",
+  "name": "@test/twine-core",
   "version": "0.0.1",
   "description": "Shared code that supports the different platform-specific versions of twine.js",
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "files": [
+    "src"
+  ],
+  "publishConfig": {
+    "registry": "https://nexus.inmar.com/nexus/content/repositories/npm-internal/"
   },
   "repository": {
     "type": "git",

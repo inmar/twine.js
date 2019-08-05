@@ -1,7 +1,6 @@
-const twine = require('./src/index.js')
+const twine = require('../src')
 const { Receives, RetryStrategy, CloudwatchInstrumentor } = twine
 const { instrumentation: { withInstrumentation } } = twine
-
 
 const sampleService = twine.createResourceService('jsonplaceholder.typicode.com')
   .usingHTTPS()

@@ -26,7 +26,7 @@ class AbstractInstrumentor extends Autobinder {
    * @param {number} startTimeUtc - Request start time in milliseconds from Epoch
    * @param {number} duration - Total duration of request in microseconds.
    */
-  async handleCompletedRequest(context, appName, instanceId, startTimeUtc, duration) {
+  handleCompletedRequest(context, appName, instanceId, startTimeUtc, duration) {
     throw new Error("Instrumentor's handleCompletedRequest method has not been implemented!")
   }
 }

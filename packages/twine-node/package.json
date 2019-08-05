@@ -1,13 +1,19 @@
 {
-  "name": "@inmar/twine-node",
+  "name": "@test/twine-node",
   "version": "0.0.1",
   "description": "Node version of twine.js",
   "main": "src/index.js",
   "dependencies": {
-    "@inmar/twine-core": "^0.0.1"
+    "@test/twine-core": "^0.0.1"
   },
+  "files": [
+    "src"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "publishConfig": {
+    "registry": "https://nexus.inmar.com/nexus/content/repositories/npm-internal/"
   },
   "repository": {
     "type": "git",
