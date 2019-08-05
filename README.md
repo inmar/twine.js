@@ -40,6 +40,12 @@ A pipeline is a collection of [components](#Components) that execute sequentiall
 and are split into 3 key sections: [Resource Services](#Resource-Service), [Request Templates](#Request-Template), [Requests](#Request).
 The combination of the components from these 3 sections make up a complete pipeline that is executed when twine runs.
 
+### Components
+Components are modules or plugins that modify or add functionality to the pipeline when they are added to it.
+Components can be written by consumers of twine to augment pipelines in ways not already included in the library.
+
+A more extensive explanation with examples is [available on the wiki](https://github.com/inmar/twine.js/wiki/Components).
+
 #### Resource Service
 A Resource Service represents a network resource to which requests can be made. 
 Typically, this is an HTTP server, however any type of resource can function as a Resource Service as long as twine has been provided the functionality to understand it.
@@ -52,10 +58,6 @@ Request Templates are children to a [Resource Service](#Resource-Service) and re
 
 #### Request
 A Request is the twine representation of a built [Request Template](#Request-Template) and is the terminal at which the request can have final options and modifiers attached before twine executes the entire pipeline to contact the service defined by the [Resource Service](#Resource-Service)
-
-### Components
-Components are modules or plugins that modify or add functionality to the pipeline when they are added to it.
-Components can be written by consumers of twine to augment pipelines in ways not already included in the library.
 
 ## Usage
 ```js
