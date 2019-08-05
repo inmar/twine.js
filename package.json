@@ -7,6 +7,6 @@
     "lerna": "^3.13.1"
   },
   "scripts": {
-    "postinstall": "lerna bootstrap"
+    "postinstall": "lerna link && lerna bootstrap"
   }
 }
