@@ -1,0 +1,6 @@
+- write a readme
+- write examples
+- write a developer wiki? maybe?
+- test version bumps
+- attempt publishing? 
+- add to CI pipeline (with publishing)

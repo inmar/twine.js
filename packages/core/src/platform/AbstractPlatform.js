@@ -1,7 +1,7 @@
 const AutoBinder = require('../utils/AutoBinder')
 
 /**
- * Contains
+ * Contains functions required by the internals of Twine that are platform specific.
  */
 class AbstractPlatform extends AutoBinder {
   constructor() {

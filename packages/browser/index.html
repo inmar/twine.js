@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <script src="dist/twine-browser.js"></script>
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+</head>
+<body>
+
+<h3>Code</h3>
+<pre>
+  <code id="editor" class="javascript hljs" contenteditable="">
+    const { twine } = window.inm
+    const { Receives, RetryStrategy } = twine
+    const jsonplaceholderService = twine.createResourceService('jsonplaceholder.typicode.com')
+        .usingHTTPS()
+
+    const getPostTitleTemplate = jsonplaceholderService.createRequestTemplate('getPostById')
+        .withoutInstrumentation()
+        .withBearerToken(() => new Promise(res => setTimeout(() => res('blah'), 1000)))
+        .withURITemplate('/posts/{id}')
+        .withMethod('GET')
+        .withHeader('my-custom-header', 'custom-header-value')
+        .receivesJSON()
+        .handleWhen(200, [
+          Receives.json,
+          resp => resp.title
+        ])
+        .handleWhen(404, (resp, ctx) => ({
+          error: 'not found',
+          resp,
+          ctx
+        }))
+        .withRetryStrategy(new RetryStrategy()
+          .maxAutoRetries(4)
+          .delayRetryForMilliseconds(250)
+          .escalateRetryDelayWith(previousDelay => previousDelay * 1.8)
+          .fallbackTo(ctx => ({ error: 'Exhausted Retries', ctx }))
+        )
+
+    const request1 = getPostTitleTemplate
+        .createRequest()
+        .withParameters({id: 2})
+
+    request1.execute()
+        .then(console.log)
+        .catch(console.error)
+
+    // // expect a 404 for this request
+    // const request2 = getPostTitleTemplate
+    //     .createRequest()
+    //     .withParameters({id: 2234234234234234})
+    //
+    // request2.execute()
+    //     .then(console.log)
+    //     .catch(console.error)
+  </code>
+</pre>
+
+<button onclick="runCode()">Execute</button>
+
+<script>
+  const runCode = function () {
+    const editor = document.getElementById('editor')
+    eval(editor.innerText)
+  }
+</script>
+
+</body>
+</html>

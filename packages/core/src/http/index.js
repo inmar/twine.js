@@ -5,7 +5,7 @@ const TwineError      = require('../utils/TwineError')
 const HttpHandler     = require('./HttpHandler')
 const Platform        = require('../platform')
 
-const { resolveProvider } = require('../utils')
+const { resolveProvider, assert } = require('../utils')
 
 /**
  * Sets the request protocol to HTTP

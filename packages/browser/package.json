@@ -4,7 +4,9 @@
   "description": "Browser version of twine",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "webpack --progress --colors --watch",
+    "build": "webpack",
+    "build-size": "webpack --showBundleSize"
   },
   "repository": {
     "type": "git",
@@ -18,5 +20,18 @@
   "homepage": "https://github.com/inmar/twine.js#readme",
   "dependencies": {
     "@inmar/twine-core": "^0.0.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.1.2",
+    "@babel/plugin-transform-modules-commonjs": "^7.4.4",
+    "@babel/plugin-transform-runtime": "^7.1.0",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/runtime": "^7.1.2",
+    "babel-loader": "^8.0.4",
+    "webpack": "^4.32.2",
+    "webpack-bundle-analyzer": "^3.0.3",
+    "webpack-cli": "^3.3.2",
+    "webpack-dev-server": "^3.1.14",
+    "yargs": "^13.2.4"
   }
 }
