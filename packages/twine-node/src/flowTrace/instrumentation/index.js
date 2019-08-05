@@ -1,4 +1,4 @@
-const { assert } = require('../../../../core/src/utils')
+const { assert } = require('@test/twine-core/src/utils')
 const { generateZipkinCompatibleUUID } = require('@test/twine-core/src/flowTrace/helpers')
 
 /**
