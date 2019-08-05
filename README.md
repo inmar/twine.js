@@ -17,7 +17,7 @@
   <a href="#contribute">Contribute</a>
 </h5>
 
-Twine is an [IPC]() request library built around the concept of explicitness. 
+Twine is an [IPC](https://en.wikipedia.org/wiki/Inter-process_communication) request library built around the concept of explicitness. Twine is heavily inspired by [Netflix's Ribbon](https://github.com/Netflix/ribbon).
 
 ## Installation
 
@@ -135,5 +135,5 @@ git clone https://github.com/inmar/twine.js
 ```
 
 2) Run `npm install` in the root of the repository to install `lerna`.
-As part of the root `npm install`, a `post-install` hook will instruct `lerna` to bootstrap the repository via `lerna bootstrap`.
+As part of the root `npm install`, a `post-install` hook will instruct `lerna` to bootstrap the repository via `lerna link` and `lerna bootstrap`.
 This will install and setup all packages and their dependencies.
