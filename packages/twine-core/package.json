@@ -9,12 +9,12 @@
   "files": [
     "src"
   ],
-  "publishConfig": {
-    "registry": "https://nexus.inmar.com/nexus/content/repositories/npm-internal/"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/inmar/twine.js.git"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "author": "Austin Keener <austin.keener@inmar.com>",
   "license": "MIT",
