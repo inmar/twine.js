@@ -32,6 +32,38 @@ npm install --save @inmar/twine-node
 ```
 
 ## Usage
+
+#### Commonly Used Methods
+There are many components and methods provided by Twine out of the box.
+Here is a small smattering of commonly used methods for the sake of HTTP calls.
+
+**More methods can be found in the source. There is inline documentation for all methods.**
+
+
+
+##### Resource Service
+ - usingHTTP
+ - usingHTTPS
+ - createRequestTemplate
+
+##### Request Template
+- withURITemplate
+- withMethod
+- withHeader
+- withBearerToken
+- withEndpointTimeout
+- handleWhen
+- withRetryStrategy
+- createRequest
+
+##### Request
+- withHeader
+- withParameters
+- withBody
+- execute
+
+
+#### Example
 ```js
 const twine = require('@inmar/twine-node')
 const {
