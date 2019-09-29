@@ -13,7 +13,7 @@ source './codebuild/helpers.sh'
 printLogDivider "Install"
 echo "Setting up and installing packages for Twine.js (npm install)..."
 for i in {1..3}; do
-  if npm i; then
+  if npm i --unsafe-perm; then
     recordAndPrintDuration "Setup and install of Twine.js complete"
     break
   else
@@ -71,8 +71,9 @@ then
 fi
 
 # Publish all packages, assuming there was a version bump
-if lerna publish from-package --registry https://npm.pkg.github.com/  --yes; then
-  recordAndPrintDuration "Successfully published Twine.js"
+if npx lerna publish from-package --registry https://npm.pkg.github.com/  --yes; then
+  recordAndPrintDuration "Publish Attempt Completed"
 else
   echo "Failed to publish Twine.js"
+  exit 1
 fi

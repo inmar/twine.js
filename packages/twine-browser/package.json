@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "dev": "webpack --progress --colors --watch",
-    "build": "webpack",
+    "build": "npx webpack",
     "build-size": "webpack --showBundleSize"
   },
   "repository": {
