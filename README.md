@@ -157,6 +157,7 @@ Important Commands
  - [lerna add](https://github.com/lerna/lerna/tree/master/commands/add#readme)
  - [lerna version](https://github.com/lerna/lerna/tree/master/commands/version#readme)
  - [lerna publish](https://github.com/lerna/lerna/tree/master/commands/publish#readme)
+   - Note, publishing should not be done manually. It will be handled by the CI pipeline given that the package versions are bumped.
  
  ### Initial Setup
  

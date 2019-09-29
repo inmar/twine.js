@@ -71,7 +71,7 @@ then
 fi
 
 # Publish all packages, assuming there was a version bump
-if lerna publish; then
+if lerna publish from-package --registry https://npm.pkg.github.com/  --yes; then
   recordAndPrintDuration "Successfully published Twine.js"
 else
   echo "Failed to publish Twine.js"
