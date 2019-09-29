@@ -23,6 +23,9 @@ const config = {
     library: ['inm', 'twine'],
     libraryTarget: 'umd',
   },
+  resolve: {
+    modules: [path.resolve(__dirname, 'node_modules')]
+  },
   module: {
     rules: [
       {
@@ -33,18 +36,18 @@ const config = {
         ],
         // exclude: /node_modules/,
         use: {
-          loader: require.resolve('babel-loader'),
+          loader: 'babel-loader',
           options: {
             "presets": [
-              [require.resolve("@babel/preset-env"), {
+              ["@babel/preset-env", {
                 "targets": {
                   "browsers": ["ie >= 11"]
                 }
               }]
             ],
             "plugins": [
-              require.resolve('@babel/plugin-transform-modules-commonjs'),
-              [require.resolve("@babel/plugin-transform-runtime"), {
+              "@babel/plugin-transform-modules-commonjs",
+              ["@babel/plugin-transform-runtime", {
                 coreJs: false,
                 helpers: true,
                 regenerator: false,
