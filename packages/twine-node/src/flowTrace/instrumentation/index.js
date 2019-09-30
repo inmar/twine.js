@@ -56,7 +56,8 @@ const instrumentLambda = (handlerFunction) => async (event, context) => {
       }
     }
     else {
-      const newTraceId = generateZipkinCompatibleUUID()
+      // use the api gateway request id if we can so we can relate the flowtrace back to the http log
+      const newTraceId = event.requestContext.requestId || generateZipkinCompatibleUUID()
       global['twine.owin.flowtrace'] = {
         originId: newTraceId,
         parentId: newTraceId
