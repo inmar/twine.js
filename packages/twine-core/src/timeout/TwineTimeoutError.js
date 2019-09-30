@@ -1,10 +1,11 @@
 const TwineError = require('../utils/TwineError')
+const { buildErrorMessage } = require('../utils/index')
 
 class TwineTimeoutError extends TwineError {
   /**
    * Constructs an Error with Twine-Timeout specific information.
    *
-   * @param {timeoutMilliseconds} timeoutMilliseconds - The timeout breached
+   * @param {number} timeoutMilliseconds - The timeout breached
    * @param {object} context - (optional) Twine Context for added debug info
    * @param {TwineBuilderLike} twineBuilder - (optional) The TwineBuilder component this error originated from for debug info
    */
