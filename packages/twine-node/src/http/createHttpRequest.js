@@ -41,29 +41,126 @@ module.exports = function createHttpRequest(requestOptions, context) {
     agent:    getRequesterAgent(requestOptions.protocol, requester)
   }
 
+  // The request, response and socket that will be created inside the promise
+  // Declared here so that event listeners can be cleaned up
+  let request
+  let response
+  let socket
+
+  // Start time for the request
+  let hrStartTime
+
+  // Event that will occur when socket lookup completes
+  const onLookup = function () {
+    const [seconds, nanoseconds] = process.hrtime(hrStartTime)
+    context.environment['tcp.LookupTimeUs'] = Math.floor(((seconds * 1e9) + nanoseconds) / 1e3)
+  }
+
+  // Event that will occur when socket finishes connecting
+  const onConnect = function () {
+    const [seconds, nanoseconds] = process.hrtime(hrStartTime)
+    context.environment['tcp.ConnectTimeUs'] = Math.floor(((seconds * 1e9) + nanoseconds) / 1e3)
+  }
+
+  // Event that will occur when socket TLS handshake is complete
+  const onSecureConnect = function () { }
+
+  // Event that will occur when socket is requested
+  const onSocket = function (sock) {
+    socket = sock
+
+    const [seconds, nanoseconds] = process.hrtime(hrStartTime)
+    context.environment['tcp.SocketTimeUs'] = Math.floor(((seconds * 1e9) + nanoseconds) / 1e3)
+
+    if (sock.connecting) {
+      sock.once('lookup', onLookup)
+      sock.once('connect', onConnect)
+      sock.once('secureConnect', onSecureConnect)
+
+      // TODO: Support socket connect timeout
+    }
+  }
+
+  // Event listeners for request and response events.
+  // Simply declared here but not assigned until inside the promise.
+  let onRequestResponse, onRequestError, onRequestTimeout
+  let onResponseData, onResponseEnd, onResponseError
+
+  // Cleanup function that should be run whether the request succeeds or fails.
+  const onComplete = function () {
+    if (request) {
+      request.removeListener('socket', onSocket)
+      onRequestResponse && request.removeListener('response', onRequestResponse)
+      onRequestTimeout && request.removeListener('timeout', onRequestTimeout)
+      if (onRequestError) {
+        request.removeListener('error', onRequestError)
+        // Since the socket is still open due to keep alive, requests might hang out for a while and throw errors if the socket closes.
+        // Ignore any such errors.
+        request.on('error', () => { })
+      }
+    }
+    if (socket) {
+      socket.removeListener('lookup', onLookup)
+      socket.removeListener('connect', onConnect)
+      socket.removeListener('secureConnect', onSecureConnect)
+      socket = null
+    }
+    if (response) {
+      onResponseData && response.removeListener('data', onResponseData)
+      onResponseEnd && response.removeListener('end', onResponseEnd)
+      onResponseError && response.removeListener('error', onResponseError)
+    }
+  }
+
+  function getResponseContent(response) {
+    const isGzipped = (response.headers['content-encoding'] || '').toLowerCase() === 'gzip'
+
+    const data = []
+    return new Promise((resolve, reject) => {
+      // Assign event handlers
+      onResponseData = (chunk) => data.push(chunk)
+      onResponseEnd = () => {
+        const buffer = Buffer.concat(data)
+        const headers = context.environment["http.ResponseHeaders"]
+        const contentLength = headers['content-length']
+        if (contentLength && +contentLength !== buffer.length) {
+          console.warn("Detected possible TCP connection cutoff due to receiving less data than what was expected based on 'content-length' header.")
+          return reject(new Error("Detected possible TCP connection cutoff due to receiving less data than what was expected based on 'content-length' header."))
+        }
+
+        if (isGzipped) {
+          resolve(zlib.gunzipSync(buffer))
+        } else {
+          resolve(buffer.toString('utf8'))
+        }
+      }
+      onResponseError = reject
+
+      resp
+        .on('data', onResponseData)
+        .on('end', onResponseEnd)
+        .on('error', onResponseError)
+    })
+  }
+
   return new Promise((resolve, reject) => {
-    let hrStartTime = process.hrtime()
+    hrStartTime = process.hrtime()
 
-    const request = requester.request(options)
-      .on('response', resolve)
-      .on('error', reject)
-      .on('timeout', () => {
-        request.abort()
-        reject(new TwineError(`Request to ${requestOptions.method} - ${requestOptions.url} timed out after ${requestOptions.timeout} milliseconds`, context))
-      })
-      .on('socket', (socket) => {
-        const [seconds, nanoseconds] = process.hrtime(hrStartTime)
-        context.environment['tcp.SocketTimeUs'] = Math.floor(((seconds * 1e9) + nanoseconds) / 1e3)
+    request = requester.request(options)
 
-        socket.on('lookup', () => {
-          const [seconds, nanoseconds] = process.hrtime(hrStartTime)
-          context.environment['tcp.LookupTimeUs'] = Math.floor(((seconds * 1e9) + nanoseconds) / 1e3)
-        })
-        socket.on('connect', () => {
-          const [seconds, nanoseconds] = process.hrtime(hrStartTime)
-          context.environment['tcp.ConnectTimeUs'] = Math.floor(((seconds * 1e9) + nanoseconds) / 1e3)
-        })
-      })
+    request.once('socket', onSocket)
+
+    // Assign event handlers
+    onRequestResponse = resolve
+    onRequestError = reject
+    onRequestTimeout = () => {
+      request.abort()
+      reject(new TwineError(`Request to ${requestOptions.method} - ${requestOptions.url} timed out after ${requestOptions.timeout} milliseconds`, context))
+    }
+
+    request.once('response', onRequestResponse)
+    request.once('error', onRequestError)
+    request.once('timeout', onRequestTimeout)
 
     //Only write out a request body if we actually have one.
     if (requestOptions.body) {
@@ -83,32 +180,12 @@ module.exports = function createHttpRequest(requestOptions, context) {
       headers:    response.headers,
       statusCode: response.statusCode,
       statusText: response.statusMessage,
-      getContent: () => getResponseContent(response)
+      getContent: () => getResponseContent(response).finally(onComplete)
     }
   })
-}
-
-function getResponseContent(response) {
-  const isGzipped = (response.headers['content-encoding'] || '').toLowerCase() === 'gzip'
-
-  const data = []
-  return new Promise((resolve, reject) => {
-    response
-      .on('data', chunk => data.push(chunk))
-      .on('end', () => {
-        const buffer = Buffer.concat(data)
-        const contentLength = response.headers['content-length']
-        if (contentLength && +contentLength !== buffer.length) {
-          console.warn("Detected possible TCP connection cutoff due to receiving less data than what was expected based on 'content-length' header.")
-          return reject(new Error("Detected possible TCP connection cutoff due to receiving less data than what was expected based on 'content-length' header."))
-        }
-
-        if(isGzipped) {
-          resolve(zlib.gunzipSync(buffer))
-        } else {
-          resolve(buffer.toString('utf8'))
-        }
-      })
-      .on('error', reject)
+  .catch(err => {
+    onComplete()
+    throw err
   })
+
 }
