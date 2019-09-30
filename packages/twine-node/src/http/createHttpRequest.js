@@ -1,6 +1,7 @@
-const http  = require('http')
-const https = require('https')
-const zlib  = require('zlib')
+const http    = require('http')
+const https   = require('https')
+const zlib    = require('zlib')
+const process = require('process')
 
 const TwineError = require('@inmar/twine-core/src/utils/TwineError')
 
@@ -26,12 +27,27 @@ module.exports = function createHttpRequest(requestOptions, context) {
   }
 
   return new Promise((resolve, reject) => {
+    let hrStartTime = process.hrtime()
+
     const request = requester.request(options)
       .on('response', resolve)
       .on('error', reject)
       .on('timeout', () => {
         request.abort()
         reject(new TwineError(`Request to ${requestOptions.method} - ${requestOptions.url} timed out after ${requestOptions.timeout} milliseconds`, context))
+      })
+      .on('socket', (socket) => {
+        const [seconds, nanoseconds] = process.hrtime(hrStartTime)
+        context.environment['tcp.SocketTimeUs'] = Math.floor(((seconds * 1e9) + nanoseconds) / 1e3)
+
+        socket.on('lookup', () => {
+          const [seconds, nanoseconds] = process.hrtime(hrStartTime)
+          context.environment['tcp.LookupTimeUs'] = Math.floor(((seconds * 1e9) + nanoseconds) / 1e3)
+        })
+        socket.on('connect', () => {
+          const [seconds, nanoseconds] = process.hrtime(hrStartTime)
+          context.environment['tcp.ConnectTimeUs'] = Math.floor(((seconds * 1e9) + nanoseconds) / 1e3)
+        })
       })
 
     //Only write out a request body if we actually have one.
