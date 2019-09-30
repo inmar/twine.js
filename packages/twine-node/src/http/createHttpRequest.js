@@ -5,6 +5,20 @@ const process = require('process')
 
 const TwineError = require('@inmar/twine-core/src/utils/TwineError')
 
+const httpAgents = {}
+
+function getRequesterAgent(protocol, requester) {
+  let agent = httpAgents[protocol]
+  if(!agent) {
+    agent = requester.Agent({
+      keepAlive: true
+    })
+    httpAgents[protocol] = agent
+  }
+
+  return agent
+}
+
 /**
  *
  * @param {RequestOptions} requestOptions
@@ -23,7 +37,8 @@ module.exports = function createHttpRequest(requestOptions, context) {
     path:     '/' + requestOptions.path, //Node requires a leading `/`
     method:   requestOptions.method,
     headers:  requestOptions.headers,
-    timeout:  requestOptions.timeout
+    timeout:  requestOptions.timeout,
+    agent:    getRequesterAgent(requestOptions.protocol, requester)
   }
 
   return new Promise((resolve, reject) => {
