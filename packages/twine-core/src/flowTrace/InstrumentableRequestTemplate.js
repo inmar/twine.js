@@ -18,8 +18,6 @@ class InstrumentableRequestTemplate extends AutoBinder {
 
     this._resourceService = resourceService
     this._requestTemplateName = requestTemplateName
-
-    resourceService.addComponent(ensureFlowTraceContext)
   }
 
   /**
@@ -38,7 +36,9 @@ class InstrumentableRequestTemplate extends AutoBinder {
     assert(instrumentor, `[Instrumentation] Provided instrumentor was null or not provided.`, null, this)
     assert(instrumentor instanceof AbstractInstrumentor, `[Instrumentation] Provided instrumentor is not an implementation of AbstractInstrumentor`, null, this)
 
-    this._resourceService.addComponent((context, next) => {
+    const requestTemplate = this._createRequestTemplate()
+
+    requestTemplate.addComponent((context, next) => {
       const appContext = global['twine.owin.appInfo']
       if (!appContext) {
         throw new TwineError("[Instrumentation] Could not find application info. Did you use twine.instrumentation.withInstrumentation (HOF) / setGlobalInstrumentationInfo?", null, this)
@@ -56,14 +56,14 @@ class InstrumentableRequestTemplate extends AutoBinder {
       }
 
       return next()
-        .then(handlePipelineCompletion)
-        .catch(async err => {
-          await handlePipelineCompletion()
-          throw err
-        })
+      .then(handlePipelineCompletion)
+      .catch(async err => {
+        await handlePipelineCompletion()
+        throw err
+      })
     })
 
-    return this._createRequestTemplate()
+    return requestTemplate
   }
 
   /**
@@ -87,7 +87,11 @@ class InstrumentableRequestTemplate extends AutoBinder {
    */
   _createRequestTemplate() {
     const twine = this._resourceService.buildTwine()
-    return new RequestTemplate(twine, this._requestTemplateName, this._resourceService.getIdentifier())
+    const requestTemplate = new RequestTemplate(twine, this._requestTemplateName, this._resourceService.getIdentifier())
+
+    requestTemplate.addComponent(ensureFlowTraceContext)
+
+    return requestTemplate
   }
 }
 
