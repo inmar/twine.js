@@ -41,6 +41,7 @@ module.exports = function createHttpRequest(requestOptions, context) {
         ? requestOptions.body
         : Buffer.from(requestOptions.body)
 
+      request.setHeader('Content-Length', bufferBody.length)
       request.write(bufferBody)
     }
 
