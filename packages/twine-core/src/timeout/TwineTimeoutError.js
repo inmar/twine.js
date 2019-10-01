@@ -17,6 +17,7 @@ class TwineTimeoutError extends TwineError {
     const errMessage = buildErrorMessage(message, context, twineBuilder)
 
     super(errMessage)
+    Object.setPrototypeOf(this, TwineTimeoutError.prototype)
     this.name = 'TwineTimeoutError'
   }
 }

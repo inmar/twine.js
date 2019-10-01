@@ -17,6 +17,7 @@ const AbstractInstrumentor = require('./flowTrace/instrumentation/AbstractInstru
 const AbstractCluster      = require('./loadBalancer/AbstractCluster')
 const AbstractPlatform     = require('./platform/AbstractPlatform')
 
+const TwineError        = require('./utils/TwineError')
 const TwineTimeoutError = require('./timeout/TwineTimeoutError')
 
 const instrumentation  = require('./flowTrace/instrumentation')
@@ -47,6 +48,7 @@ module.exports = {
   AbstractCluster,
   AbstractPlatform,
 
+  TwineError,
   TwineTimeoutError,
 
   instrumentation,

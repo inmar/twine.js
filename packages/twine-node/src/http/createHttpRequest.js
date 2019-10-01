@@ -3,8 +3,7 @@ const https   = require('https')
 const zlib    = require('zlib')
 const process = require('process')
 
-const TwineError        = require('@inmar/twine-core/src/utils/TwineError')
-const TwineTimeoutError = require('@inmar/twine-core/src/timeout/TwineTimeoutError')
+const { TwineTimeoutError } = require('@inmar/twine-core')
 
 const httpAgents = {}
 
@@ -141,9 +140,6 @@ module.exports = function createHttpRequest(requestOptions, context) {
         // Don't do anything in that case.
         if (socket) {
           const error = new TwineTimeoutError(`Socket Connect timed out after ${socketConnectTimeout}ms`, context)
-          error.name = 'connectTimeout'
-          error.code = 'ETIMEDOUT'
-          error.statusCode = 504
           socket.emit('timeout')
           request.emit('error', error)
         }
@@ -198,8 +194,10 @@ module.exports = function createHttpRequest(requestOptions, context) {
         const headers = context.environment["http.ResponseHeaders"]
         const contentLength = headers['content-length']
         if (contentLength && +contentLength !== buffer.length) {
-          console.warn("Detected possible TCP connection cutoff due to receiving less data than what was expected based on 'content-length' header.")
-          return reject(new Error("Detected possible TCP connection cutoff due to receiving less data than what was expected based on 'content-length' header."))
+          const errMessage = "Detected possible TCP connection cutoff due to receiving less data than what was expected based on 'content-length' header"
+
+          console.warn(errMessage)
+          return reject(new TwineError(errMessage, context))
         }
 
         if (isGzipped) {

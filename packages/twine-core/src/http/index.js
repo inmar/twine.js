@@ -697,7 +697,7 @@ function createHTTPResourceServiceModule(context, next) {
       context.environment['http.ResponseStatusCode']   = 0
       context.environment['http.ResponseReasonPhrase'] = "The HTTP transport failed"
       context.environment['twine.IsRemoteFaulted']     = true
-      context.environment['twine.FaultException']      = new Error(`The HTTP transport failed: ${err}`)
+      context.environment['twine.FaultException']      = err
     })
     .then(next)
 }
