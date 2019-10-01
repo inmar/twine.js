@@ -5,12 +5,16 @@ class TwineTimeoutError extends TwineError {
   /**
    * Constructs an Error with Twine-Timeout specific information.
    *
-   * @param {number} timeoutMilliseconds - The timeout breached
+   * @param {string | number} messageOrTimeout - The timout breached or a custom error message
    * @param {object} context - (optional) Twine Context for added debug info
    * @param {TwineBuilderLike} twineBuilder - (optional) The TwineBuilder component this error originated from for debug info
    */
-  constructor (timeoutMilliseconds, context = null, twineBuilder = null) {
-    const errMessage = buildErrorMessage(`Twine timeout of ${timeoutMilliseconds}ms reached`, context, twineBuilder)
+  constructor (messageOrTimeout, context = null, twineBuilder = null) {
+    const message = Number.isNaN(Number(messageOrTimeout))
+      ? messageOrTimeout
+      : `Twine timeout of ${messageOrTimeout}ms reached`
+
+    const errMessage = buildErrorMessage(message, context, twineBuilder)
 
     super(errMessage)
     this.name = 'TwineTimeoutError'

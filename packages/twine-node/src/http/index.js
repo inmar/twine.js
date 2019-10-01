@@ -2,9 +2,11 @@ const ResourceService = require('@inmar/twine-core/src/requestResponse/ResourceS
 
 /**
  * Sets the maximum amount of time, in milliseconds, to wait for the socket to connect before timing out.
- * Not every service respects this setting. For http, the default timeout is 200 milliseconds if not specified.
+ * Not every service respects this setting. The HTTP module supports this component and defaults to 500ms if not used.
  *
- * @param {int} milliseconds
+ * If <code>null</code> is passed, any default set by a module will be ignored.
+ *
+ * @param {number | null} milliseconds - The max time allowed for a socket to connect, or <code>null</code> to disable the default.
  *
  * @returns {RequestTemplate}
  */

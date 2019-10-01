@@ -3,7 +3,8 @@ const https   = require('https')
 const zlib    = require('zlib')
 const process = require('process')
 
-const TwineError = require('@inmar/twine-core/src/utils/TwineError')
+const TwineError        = require('@inmar/twine-core/src/utils/TwineError')
+const TwineTimeoutError = require('@inmar/twine-core/src/timeout/TwineTimeoutError')
 
 const httpAgents = {}
 
@@ -41,10 +42,16 @@ module.exports = function createHttpRequest(requestOptions, context) {
   }
 
   // Connect timeout for the socket
-  const connectTimeout = context.environment['net.ConnectTimeout'] || 200
+  const providedConnectTimeout = context.environment['net.ConnectTimeout']
+  const connectTimeout = providedConnectTimeout !== undefined
+    ? providedConnectTimeout
+    : 500
 
   // Overall timeout for the request
-  const requestTimeout = requestOptions.timeout
+  let timeoutTime = null //Set just before request is made
+  const requestTimeout = requestOptions.timeout || null
+  const getTimeRemaining = () => timeoutTime ? timeoutTime - Date.now() : null
+
 
   // The request, response and socket that will be created inside the promise
   // Declared here so that event listeners can be cleaned up
@@ -54,6 +61,7 @@ module.exports = function createHttpRequest(requestOptions, context) {
 
   // Measure connect time for the socket so we can abort if it exceeds the connect timeout
   let connectTimer
+  let requestTimer
 
   // Start time for the request
   let hrStartTime
@@ -72,8 +80,9 @@ module.exports = function createHttpRequest(requestOptions, context) {
     if (options.protocol === 'http') {
       clearTimeout(connectTimer)
       connectTimer = undefined
-      if (requestTimeout) {
-        request.setTimeout(requestTimeout)
+
+      if (timeoutTime) {
+        requestTimer = setTimeout(() => request.emit('timeout'), getTimeRemaining())
       }
     }
   }
@@ -86,8 +95,9 @@ module.exports = function createHttpRequest(requestOptions, context) {
     if (options.protocol === 'https') {
       clearTimeout(connectTimer)
       connectTimer = undefined
-      if (requestTimeout) {
-        request.setTimeout(requestTimeout)
+
+      if (timeoutTime) {
+        requestTimer = setTimeout(() => request.emit('timeout'), getTimeRemaining())
       }
     }
   }
@@ -112,18 +122,32 @@ module.exports = function createHttpRequest(requestOptions, context) {
       sock.once('secureConnect', onSocketSecureConnect)
       sock.once('timeout', onSocketTimeout)
 
+      //If we were provided an overall request timeout that is smaller than the connect timeout, use that.
+      const timeRemaining = getTimeRemaining()
+      const socketConnectTimeout =
+        timeoutTime
+          ? connectTimeout
+            ? Math.min(connectTimeout, timeRemaining)
+            : timeRemaining
+          : connectTimeout
+
+      //If no socket timeout was set and there is no request-level timeout, skip setting this.
+      if (socketConnectTimeout === null) {
+        return
+      }
+
       connectTimer = setTimeout(() => {
         // sometimes this timeout expires when a socket couldn't be acquired, e.g. host not found.
         // Don't do anything in that case.
         if (socket) {
-          const error = new Error('Socket connect timeout')
+          const error = new TwineTimeoutError(`Socket Connect timed out after ${socketConnectTimeout}ms`, context)
           error.name = 'connectTimeout'
           error.code = 'ETIMEDOUT'
           error.statusCode = 504
           socket.emit('timeout')
           request.emit('error', error)
         }
-      }, connectTimeout)
+      }, socketConnectTimeout)
     }
   }
 
@@ -134,6 +158,9 @@ module.exports = function createHttpRequest(requestOptions, context) {
 
   // Cleanup function that should be run whether the request succeeds or fails.
   const onComplete = function () {
+    clearTimeout(requestTimer)
+    requestTimer = undefined
+
     if (request) {
       request.removeListener('socket', onSocket)
       onRequestResponse && request.removeListener('response', onRequestResponse)
@@ -193,6 +220,7 @@ module.exports = function createHttpRequest(requestOptions, context) {
   return new Promise((resolve, reject) => {
     hrStartTime = process.hrtime()
 
+    timeoutTime = requestTimeout && (Date.now() + requestTimeout)
     request = requester.request(options)
 
     request.once('socket', onSocket)
@@ -202,7 +230,7 @@ module.exports = function createHttpRequest(requestOptions, context) {
     onRequestError = reject
     onRequestTimeout = () => {
       request.abort()
-      const err = new TwineError(`Request to ${requestOptions.method} - ${requestOptions.url} timed out after ${requestOptions.timeout} milliseconds`, context)
+      const err = new TwineTimeoutError(`Http Request timed out after ${requestTimeout}ms`, context)
       if (response) {
         response.emit('error', err)
       }

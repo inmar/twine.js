@@ -618,6 +618,8 @@ function addHeaderToContext(context, headerName, headerValue) {
 }
 
 function createHTTPResourceServiceModule(context, next) {
+  context.environment['twine.TimeoutImplemented'] = true
+
   if (!context.environment['twine.Host']) {
     context.environment['twine.Host'] = context.environment['twine.ResourceServiceName']
   }
@@ -680,8 +682,14 @@ function createHTTPResourceServiceModule(context, next) {
       context.environment['http.ResponseBody'] = responseData
     })
     .catch(err => {
-      if (err && err.stack) {
-        err = err.stack
+      //Be sure to wrap as a TwineError if it isn't already so that we capture the current context
+      if (!(err instanceof TwineError)) {
+        //If we are wrapped an Error object, grab the stack for better debuggability.
+        if (err && err.stack) {
+          err = err.stack
+        }
+
+        err = new TwineError(`The HTTP transport failed: ${err}`, context)
       }
 
       context.environment['http.ResponseBody']         = null
