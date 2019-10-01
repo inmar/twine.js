@@ -140,21 +140,6 @@ RequestTemplate.prototype.withMethod = function(method) {
 }
 
 /**
- * Sets the maximum amount of time, in milliseconds, that a request can take before failing.
- * Note: This is not the timelimit for the entire template, <i>only</i> the timelimit for the network request.
- *
- * @param {int} milliseconds
- *
- * @returns {RequestTemplate}
- */
-RequestTemplate.prototype.withEndpointTimeout = function(milliseconds) {
-  return this.addComponent((context, next) => {
-    context.environment['http.RequestTimeout'] = milliseconds
-    return next()
-  })
-}
-
-/**
  * Quality of Life method that calls both {@link RequestTemplate#sendsJSON sendsJSON} and {@link RequestTemplate#receivesJSON receivesJSON}.
  *
  * @returns {RequestTemplate}
@@ -651,7 +636,7 @@ function createHTTPResourceServiceModule(context, next) {
     port:     context.environment['twine.Port'],
     path:     context.environment['http.RequestPath'],
     headers:  context.environment['http.RequestHeaders'],
-    timeout:  context.environment['http.RequestTimeout'] || 0,
+    timeout:  context.environment['twine.RequestTimeout'] || 0,
     body:     context.environment['http.RequestBody'],
   }
 

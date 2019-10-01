@@ -37,9 +37,14 @@ module.exports = function createHttpRequest(requestOptions, context) {
     path:     '/' + requestOptions.path, //Node requires a leading `/`
     method:   requestOptions.method,
     headers:  requestOptions.headers,
-    timeout:  requestOptions.timeout,
     agent:    getRequesterAgent(requestOptions.protocol, requester)
   }
+
+  // Connect timeout for the socket
+  const connectTimeout = context.environment['net.ConnectTimeout'] || 200
+
+  // Overall timeout for the request
+  const requestTimeout = requestOptions.timeout
 
   // The request, response and socket that will be created inside the promise
   // Declared here so that event listeners can be cleaned up
@@ -47,23 +52,52 @@ module.exports = function createHttpRequest(requestOptions, context) {
   let response
   let socket
 
+  // Measure connect time for the socket so we can abort if it exceeds the connect timeout
+  let connectTimer
+
   // Start time for the request
   let hrStartTime
 
   // Event that will occur when socket lookup completes
-  const onLookup = function () {
+  const onSocketLookup = function () {
     const [seconds, nanoseconds] = process.hrtime(hrStartTime)
     context.environment['tcp.LookupTimeUs'] = Math.floor(((seconds * 1e9) + nanoseconds) / 1e3)
   }
 
   // Event that will occur when socket finishes connecting
-  const onConnect = function () {
+  const onSocketConnect = function () {
     const [seconds, nanoseconds] = process.hrtime(hrStartTime)
     context.environment['tcp.ConnectTimeUs'] = Math.floor(((seconds * 1e9) + nanoseconds) / 1e3)
+
+    if (options.protocol === 'http') {
+      clearTimeout(connectTimer)
+      connectTimer = undefined
+      if (requestTimeout) {
+        request.setTimeout(requestTimeout)
+      }
+    }
   }
 
   // Event that will occur when socket TLS handshake is complete
-  const onSecureConnect = function () { }
+  const onSocketSecureConnect = function () {
+    const [seconds, nanoseconds] = process.hrtime(hrStartTime)
+    context.environment['tcp.SecureConnectTimeUs'] = Math.floor(((seconds * 1e9) + nanoseconds) / 1e3)
+
+    if (options.protocol === 'https') {
+      clearTimeout(connectTimer)
+      connectTimer = undefined
+      if (requestTimeout) {
+        request.setTimeout(requestTimeout)
+      }
+    }
+  }
+
+  const onSocketTimeout = function () {
+    if (socket) {
+      // Timeout doesn't close the connection.
+      socket.end()
+    }
+  }
 
   // Event that will occur when socket is requested
   const onSocket = function (sock) {
@@ -73,11 +107,23 @@ module.exports = function createHttpRequest(requestOptions, context) {
     context.environment['tcp.SocketTimeUs'] = Math.floor(((seconds * 1e9) + nanoseconds) / 1e3)
 
     if (sock.connecting) {
-      sock.once('lookup', onLookup)
-      sock.once('connect', onConnect)
-      sock.once('secureConnect', onSecureConnect)
+      sock.once('lookup', onSocketLookup)
+      sock.once('connect', onSocketConnect)
+      sock.once('secureConnect', onSocketSecureConnect)
+      sock.once('timeout', onSocketTimeout)
 
-      // TODO: Support socket connect timeout
+      connectTimer = setTimeout(() => {
+        // sometimes this timeout expires when a socket couldn't be acquired, e.g. host not found.
+        // Don't do anything in that case.
+        if (socket) {
+          const error = new Error('Socket connect timeout')
+          error.name = 'connectTimeout'
+          error.code = 'ETIMEDOUT'
+          error.statusCode = 504
+          socket.emit('timeout')
+          request.emit('error', error)
+        }
+      }, connectTimeout)
     }
   }
 
@@ -100,9 +146,10 @@ module.exports = function createHttpRequest(requestOptions, context) {
       }
     }
     if (socket) {
-      socket.removeListener('lookup', onLookup)
-      socket.removeListener('connect', onConnect)
-      socket.removeListener('secureConnect', onSecureConnect)
+      socket.removeListener('lookup', onSocketLookup)
+      socket.removeListener('connect', onSocketConnect)
+      socket.removeListener('secureConnect', onSocketSecureConnect)
+      socket.removeListener('timeout', onSocketTimeout)
       socket = null
     }
     if (response) {
@@ -155,7 +202,13 @@ module.exports = function createHttpRequest(requestOptions, context) {
     onRequestError = reject
     onRequestTimeout = () => {
       request.abort()
-      reject(new TwineError(`Request to ${requestOptions.method} - ${requestOptions.url} timed out after ${requestOptions.timeout} milliseconds`, context))
+      const err = new TwineError(`Request to ${requestOptions.method} - ${requestOptions.url} timed out after ${requestOptions.timeout} milliseconds`, context)
+      if (response) {
+        response.emit('error', err)
+      }
+      else {
+        reject(err)
+      }
     }
 
     request.once('response', onRequestResponse)
@@ -175,12 +228,13 @@ module.exports = function createHttpRequest(requestOptions, context) {
 
     request.end()
   })
-  .then(response => {
+  .then(resp => {
+    response = resp
     return {
-      headers:    response.headers,
-      statusCode: response.statusCode,
-      statusText: response.statusMessage,
-      getContent: () => getResponseContent(response).finally(onComplete)
+      headers:    resp.headers,
+      statusCode: resp.statusCode,
+      statusText: resp.statusMessage,
+      getContent: () => getResponseContent(resp).finally(onComplete)
     }
   })
   .catch(err => {

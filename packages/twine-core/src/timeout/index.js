@@ -14,10 +14,10 @@ const TwineTimeoutError = require("./TwineTimeoutError")
  *
  */
 RequestTemplate.prototype.withTimeout = function(timeoutMilliseconds) {
-
   return this.addComponent((context, next) => {
+    context.environment['twine.RequestTimeout'] = timeoutMilliseconds
 
-    let timeout = new Promise((_, reject) => setTimeout(reject, timeoutMilliseconds, new TwineTimeoutError(timeoutMilliseconds, context)))
+    const timeout = new Promise((_, reject) => setTimeout(reject, timeoutMilliseconds, new TwineTimeoutError(timeoutMilliseconds, context)))
     return Promise.race([timeout, next()]).catch(err => {
       context.environment['twine.FaultException'] = err
       throw err
