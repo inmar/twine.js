@@ -19,7 +19,11 @@ RequestTemplate.prototype.withTimeout = function(timeoutMilliseconds) {
 
     const timeout = new Promise((_, reject) => setTimeout(reject, timeoutMilliseconds, new TwineTimeoutError(timeoutMilliseconds, context)))
     return Promise.race([timeout, next()]).catch(err => {
-      context.environment['twine.FaultException'] = err
+      if (err instanceof TwineTimeoutError) {
+        context.environment['twine.FaultException'] = err
+        context.environment['twine.IsRemoteFaulted'] = true
+      }
+
       throw err
     })
   })

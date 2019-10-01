@@ -20,11 +20,11 @@ class RetryStrategy {
    *
    * @example
    * //This example shows how one can use the Twine context environment.
-   * //The RetryStrategy will only be invoked if there was a timeout error throw in pipeline
+   * //The RetryStrategy will only be invoked if there was a TwineTimeoutError throw in pipeline
    * .withRetryStrategy(new RetryStrategy()
    *   .retryWhen(ctx => {
    *     const error = ctx['twine.FaultException']
-   *     return error && error.message && error.message.includes('timeout')
+   *     return error instanceof TwineTimeoutError
    *   })
    *   .maxAutoRetries(2)
    * )
@@ -58,7 +58,7 @@ class RetryStrategy {
    * // is only looking for 500 status codes.
    * .handleWhen(500, () => "Internal Server Error!")
    * .withRetryStrategy(new RetryStrategy()
-   *   .retryWhen(() => RetryStrategy.HandleWhen.onHttpStatus(500))
+   *   .retryWhen(() => RetryStrategy.RetryWhen.onHttpStatus(500))
    *   .maxAutoRetries(2)
    * )
    *
@@ -227,7 +227,7 @@ RetryStrategy.RetryWhen = {
    * Remote faults are determined by checking the 'twine.RemoteFaulted' Twine context key.
    *
    * @example
-   * .retryWhen(RetryStrategy.HandleWhen.onRemoteFaulted)
+   * .retryWhen(RetryStrategy.RetryWhen.onRemoteFaulted)
    *
    * @param {Object} context - The Twine context environment
    *
@@ -242,13 +242,13 @@ RetryStrategy.RetryWhen = {
    * or a predicate that converts a status to a boolean.
    *
    * @example
-   * .retryWhen(RetryStrategy.HandleWhen.onHttpStatus(404))
+   * .retryWhen(RetryStrategy.RetryWhen.onHttpStatus(404))
    *
    * @example
-   * .retryWhen(RetryStrategy.HandleWhen.onHttpStatus([404, 409, 500]))
+   * .retryWhen(RetryStrategy.RetryWhen.onHttpStatus([404, 409, 500]))
    *
    * @example
-   * .retryWhen(RetryStrategy.HandleWhen.onHttpStatus(status => status < 200 || status > 299))
+   * .retryWhen(RetryStrategy.RetryWhen.onHttpStatus(status => status < 200 || status > 299))
    *
    * @param {
    *   number,
@@ -278,7 +278,7 @@ RetryStrategy.RetryWhen = {
    *
    * @example
    * //Equivalent to () => true
-   * .retryWhen(RetryStrategy.HandleWhen.always)
+   * .retryWhen(RetryStrategy.RetryWhen.always)
    *
    * @returns {boolean}
    */

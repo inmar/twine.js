@@ -1,5 +1,6 @@
-const RequestTemplate = require("../requestResponse/RequestTemplate")
-const RetryStrategy   = require("./RetryStrategy")
+const RequestTemplate   = require("../requestResponse/RequestTemplate")
+const RetryStrategy     = require("./RetryStrategy")
+const TwineTimeoutError = require('../timeout/TwineTimeoutError')
 
 /**
  * Protects a pipeline from RemoteFaults
@@ -30,9 +31,7 @@ RequestTemplate.prototype.withRetryStrategy = function(retryStrategy) {
 
 //Recursive function to handle re-calling until maxRetries is hit
 function handleRetry(context, nextComponent, retryStrategy, retryAttempts, previousDelay = undefined) {
-  //Execute the pipeline, then seen if we need to setup additional retries
-  return nextComponent().then(() => {
-
+  const handlePipelineCompletion = () => {
     //Only setup additional retries when the remote is at fault and the status hasn't been handled already
     if (context.environment['twine.HandlerExecuted'] || !retryStrategy._retryWhen(Object.assign({}, context.environment))) {
       return
@@ -63,5 +62,15 @@ function handleRetry(context, nextComponent, retryStrategy, retryAttempts, previ
     return new Promise(resolve => {
       setTimeout(() => resolve(handleRetry(context, nextComponent, retryStrategy, retryAttempts, retryDelay)), retryDelay)
     })
-  })
+  }
+
+  return nextComponent()
+    .then(handlePipelineCompletion)
+    .catch(err => {
+      if (!(err instanceof TwineTimeoutError)) {
+        throw err
+      }
+
+      return handlePipelineCompletion()
+    })
 }
