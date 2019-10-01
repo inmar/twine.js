@@ -1,4 +1,5 @@
-const { assert } = require('../utils')
+const { assert }        = require('../utils')
+const TwineTimeoutError = require('../timeout/TwineTimeoutError')
 
 /**
  * Object representing the configuration of a pipeline's retry functionality
@@ -284,6 +285,22 @@ RetryStrategy.RetryWhen = {
    */
   always() {
     return true
+  },
+
+  /**
+   * Helper that will retry the pipeline given that the requested failed due to
+   * a timeout as indicated by context['twine.FaultException'] instanceof TwineTimeoutError
+   *
+   * @example
+   * .retryWhen(RetryStrategy.RetryWhen.onTimeout)
+   *
+   * @param {Object} context - The Twine context environment
+   *
+   * @returns {boolean}
+   */
+  onTimeout(context) {
+    const err = context['twine.FaultException']
+    return err && err instanceof TwineTimeoutError
   }
 }
 
