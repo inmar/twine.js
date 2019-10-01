@@ -41,7 +41,7 @@ class InstrumentableRequestTemplate extends AutoBinder {
     requestTemplate.addComponent((context, next) => {
       const appContext = global['twine.owin.appInfo']
       if (!appContext) {
-        throw new TwineError("[Instrumentation] Could not find application info. Did you use twine.instrumentation.withInstrumentation (HOF) / setGlobalInstrumentationInfo?", null, this)
+        throw new TwineError("[Instrumentation] Could not find application info. Did you use twine.instrumentation.instrumentLambda (HOF) / setGlobalInstrumentationInfo?", null, this)
       }
 
       const appName = appContext['appName']
