@@ -186,7 +186,7 @@ module.exports = function createHttpRequest(requestOptions, context) {
     }
   }
 
-  function getResponseContent(response) {
+  function getResponseContent(resp) {
     const isGzipped = (response.headers['content-encoding'] || '').toLowerCase() === 'gzip'
 
     const data = []
