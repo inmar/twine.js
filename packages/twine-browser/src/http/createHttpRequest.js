@@ -1,4 +1,4 @@
-const TwineError = require('@inmar/twine-core/src/utils/TwineError')
+const TwineTimeoutError = require('@inmar/twine-core/src/timeout/TwineTimeoutError')
 
 /**
  *
@@ -9,7 +9,7 @@ const TwineError = require('@inmar/twine-core/src/utils/TwineError')
  */
 module.exports = function createHttpRequest(requestOptions, context) {
   return Promise.race([
-    getTimeoutPromise(requestOptions.timeout),
+    getTimeoutPromise(requestOptions.timeout, context),
     fetch(requestOptions.url, {
       headers: requestOptions.headers,
       method:  requestOptions.method,
@@ -17,10 +17,6 @@ module.exports = function createHttpRequest(requestOptions, context) {
     })
   ])
   .then(response => {
-    if (response.didTimeout) {
-      throw new TwineError(`Request to ${requestOptions.method} - ${requestOptions.url} timed out after ${requestOptions.timeout} milliseconds`, context)
-    }
-
     //Convert Fetch's Headers object to a basic JS object.
     //Reference: https://developer.mozilla.org/en-US/docs/Web/API/Headers
     const headers = {}
@@ -37,11 +33,11 @@ module.exports = function createHttpRequest(requestOptions, context) {
   })
 }
 
-function getTimeoutPromise(timeout) {
+function getTimeoutPromise(timeout, context) {
   if (!timeout) {
     //A never resolving promise when no timeout is set.
     return new Promise(resolve => {})
   }
 
-  return new Promise(resolve => setTimeout(resolve, timeout, {didTimeout : true}))
+  return new Promise((_, reject) => setTimeout(reject, timeout, new TwineTimeoutError(`Http Request timed out after ${timeout}ms`, context)))
 }
