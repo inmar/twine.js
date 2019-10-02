@@ -2,6 +2,15 @@ const TwineBuilder    = require('../builder')
 const RequestTemplate = require('./RequestTemplate')
 const TwineError      = require('../utils/TwineError')
 
+function changeErrorStackToExecutionStack(error, context) {
+  const stackContextError = context.environment['twine.ExecutionStackContext']
+  stackContextError.name = error.name
+  stackContextError.message = error.message
+  error.stack = stackContextError.stack
+
+  return error
+}
+
 /**
  * Marks the end of the of the reusable template creation
  *
@@ -33,7 +42,8 @@ class Request extends TwineBuilder {
   execute() {
     let context = {
       environment: {
-        'twine.RequestInstance': this
+        'twine.RequestInstance': this,
+        'twine.ExecutionStackContext': new Error("STACK-CONTEXT")
       }
     }
 
@@ -44,16 +54,19 @@ class Request extends TwineBuilder {
           const statusCode = context.environment['http.ResponseStatusCode']
 
           //If we faulted, but didn't handle the fault specifically, throw as such.
+          let err
           if (context.environment['twine.IsRemoteFaulted']) {
-            const err = context.environment['twine.FaultException']
-            if (err instanceof TwineError) {
-              throw context.environment['twine.FaultException']
+            err = context.environment['twine.FaultException']
+            if (!(err instanceof TwineError)) {
+              err = new TwineError(`Twine Pipeline RemoteFaulted: ${err}`, context)
             }
-
-            throw new TwineError(`Twine Pipeline RemoteFaulted: ${err}`, context)
+          }
+          else {
+            err = new TwineError(`No handler exists for status code ${statusCode} in HTTP response.`, context)
           }
 
-          throw new TwineError(`No handler exists for status code ${statusCode} in HTTP response.`, context)
+          //TODO: Allow for users to chose to _not_ override the error with external context, but to instead use the raw internal error.
+          throw changeErrorStackToExecutionStack(err, context)
         }
       })
     })
