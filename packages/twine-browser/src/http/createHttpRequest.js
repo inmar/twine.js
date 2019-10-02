@@ -3,6 +3,7 @@ const TwineError = require('@inmar/twine-core/src/utils/TwineError')
 /**
  *
  * @param {RequestOptions} requestOptions
+ * @param {Object} context
  *
  * @returns {Promise<RequestResponse>}
  */

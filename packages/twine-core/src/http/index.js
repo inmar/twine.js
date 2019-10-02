@@ -140,21 +140,6 @@ RequestTemplate.prototype.withMethod = function(method) {
 }
 
 /**
- * Sets the maximum amount of time, in milliseconds, that a request can take before failing.
- * Note: This is not the timelimit for the entire template, <i>only</i> the timelimit for the network request.
- *
- * @param {int} milliseconds
- *
- * @returns {RequestTemplate}
- */
-RequestTemplate.prototype.withEndpointTimeout = function(milliseconds) {
-  return this.addComponent((context, next) => {
-    context.environment['http.RequestTimeout'] = milliseconds
-    return next()
-  })
-}
-
-/**
  * Quality of Life method that calls both {@link RequestTemplate#sendsJSON sendsJSON} and {@link RequestTemplate#receivesJSON receivesJSON}.
  *
  * @returns {RequestTemplate}
@@ -633,6 +618,8 @@ function addHeaderToContext(context, headerName, headerValue) {
 }
 
 function createHTTPResourceServiceModule(context, next) {
+  context.environment['twine.TimeoutImplemented'] = true
+
   if (!context.environment['twine.Host']) {
     context.environment['twine.Host'] = context.environment['twine.ResourceServiceName']
   }
@@ -651,7 +638,7 @@ function createHTTPResourceServiceModule(context, next) {
     port:     context.environment['twine.Port'],
     path:     context.environment['http.RequestPath'],
     headers:  context.environment['http.RequestHeaders'],
-    timeout:  context.environment['http.RequestTimeout'] || 0,
+    timeout:  context.environment['twine.RequestTimeout'] || 0,
     body:     context.environment['http.RequestBody'],
   }
 
@@ -695,8 +682,14 @@ function createHTTPResourceServiceModule(context, next) {
       context.environment['http.ResponseBody'] = responseData
     })
     .catch(err => {
-      if (err && err.stack) {
-        err = err.stack
+      //Be sure to wrap as a TwineError if it isn't already so that we capture the current context
+      if (!(err instanceof TwineError)) {
+        //If we are wrapped an Error object, grab the stack for better debuggability.
+        if (err && err.stack) {
+          err = err.stack
+        }
+
+        err = new TwineError(`The HTTP transport failed: ${err}`, context)
       }
 
       context.environment['http.ResponseBody']         = null
@@ -704,7 +697,7 @@ function createHTTPResourceServiceModule(context, next) {
       context.environment['http.ResponseStatusCode']   = 0
       context.environment['http.ResponseReasonPhrase'] = "The HTTP transport failed"
       context.environment['twine.IsRemoteFaulted']     = true
-      context.environment['twine.FaultException']      = new Error(`The HTTP transport failed: ${err}`)
+      context.environment['twine.FaultException']      = err
     })
     .then(next)
 }

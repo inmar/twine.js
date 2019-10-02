@@ -9,7 +9,6 @@ const sampleTemplate = sampleService.createRequestTemplate('sampleApiTemplate')
   .withoutInstrumentation()
   .withURITemplate('todos/{id}')
   .withMethod('GET')
-  .withEndpointTimeout(100)
   .receivesJSON()
   .handleWhen(200, [
     Receives.json,

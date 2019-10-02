@@ -50,13 +50,25 @@ const instrumentLambda = (handlerFunction) => async (event, context) => {
     //Only set the global flowtrace headers if we found both
     //If we didn't find them, start a new trace so any requests made will all share the same traceId
     if (traceId && spanId) {
+      console.log(`Lambda request ID ${context.awsRequestId} continuing trace ID ${traceId} with parent span ${spanId}`)
       global['twine.owin.flowtrace'] = {
         originId: traceId,
         parentId: spanId
       }
     }
     else {
-      const newTraceId = generateZipkinCompatibleUUID()
+      let newTraceId
+
+      // use the api gateway request id if we can so we can relate the flowtrace back to the http log
+      if (event && event.requestContext && event.requestContext.requestId) {
+        newTraceId = event.requestContext.requestId.replace(/-/g, '').substring(0, 16)
+        console.log(`Lambda request ID ${context.awsRequestId} derived new trace ID ${newTraceId} from API Gateway request ID ${event.requestContext.requestId}`)
+      }
+      else {
+        newTraceId = generateZipkinCompatibleUUID()
+        console.log(`Lambda request ID ${context.awsRequestId} created new trace ID ${newTraceId}`)
+      }
+
       global['twine.owin.flowtrace'] = {
         originId: newTraceId,
         parentId: newTraceId

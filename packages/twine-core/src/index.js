@@ -4,6 +4,7 @@ require('./loadBalancer')
 require('./flowTrace')
 require('./retry')
 require('./sdk')
+require('./timeout')
 
 const TwineBuilder    = require('./builder')
 const ResourceService = require('./requestResponse/ResourceService')
@@ -15,6 +16,9 @@ const RetryStrategy   = require('./retry/RetryStrategy')
 const AbstractInstrumentor = require('./flowTrace/instrumentation/AbstractInstrumentor')
 const AbstractCluster      = require('./loadBalancer/AbstractCluster')
 const AbstractPlatform     = require('./platform/AbstractPlatform')
+
+const TwineError        = require('./utils/TwineError')
+const TwineTimeoutError = require('./timeout/TwineTimeoutError')
 
 const instrumentation  = require('./flowTrace/instrumentation')
 
@@ -43,6 +47,9 @@ module.exports = {
   AbstractInstrumentor,
   AbstractCluster,
   AbstractPlatform,
+
+  TwineError,
+  TwineTimeoutError,
 
   instrumentation,
 }

@@ -45,7 +45,12 @@ class Request extends TwineBuilder {
 
           //If we faulted, but didn't handle the fault specifically, throw as such.
           if (context.environment['twine.IsRemoteFaulted']) {
-            throw new TwineError(`Twine Pipeline RemoteFaulted: ${context.environment['twine.FaultException']}`, context)
+            const err = context.environment['twine.FaultException']
+            if (err instanceof TwineError) {
+              throw context.environment['twine.FaultException']
+            }
+
+            throw new TwineError(`Twine Pipeline RemoteFaulted: ${err}`, context)
           }
 
           throw new TwineError(`No handler exists for status code ${statusCode} in HTTP response.`, context)
