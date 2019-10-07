@@ -80,7 +80,7 @@ const getTodoTemplate = jsonPlaceholderService.createRequestTemplate('get-todo')
   .withoutInstrumentation()
   .withURITemplate('/todos/{id}')
   .withMethod('GET')
-  .withEndpointTimeout(100)
+  .withTimeout(100)
   .receivesJSON()
   .handleWhen(200, [
     Receives.json,
