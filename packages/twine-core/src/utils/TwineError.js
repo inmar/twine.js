@@ -12,7 +12,7 @@ class TwineError extends Error {
     const errMessage = buildErrorMessage(message, context, twineBuilder)
 
     super(errMessage)
-    Object.setPrototypeOf(this, Error.prototype)
+    Object.setPrototypeOf(this, TwineError.prototype)
     this.name = 'TwineError'
   }
 }
