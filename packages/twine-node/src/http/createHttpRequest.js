@@ -173,6 +173,7 @@ module.exports = function createHttpRequest(requestOptions, context) {
       socket.removeListener('connect', onSocketConnect)
       socket.removeListener('secureConnect', onSocketSecureConnect)
       socket.removeListener('timeout', onSocketTimeout)
+      socket.end()
       socket = null
     }
     if (response) {
@@ -256,6 +257,7 @@ module.exports = function createHttpRequest(requestOptions, context) {
   })
   .then(resp => {
     response = resp
+
     return {
       headers:    resp.headers,
       statusCode: resp.statusCode,
