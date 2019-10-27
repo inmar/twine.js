@@ -70,10 +70,16 @@ then
   exit
 fi
 
-# Publish all packages, assuming there was a version bump
-if npx lerna publish from-package --registry https://npm.pkg.github.com/  --yes; then
-  recordAndPrintDuration "Publish Attempt Completed"
-else
-  echo "Failed to publish Twine.js"
-  exit 1
-fi
+registries=('https://registry.npmjs.org' 'https://npm.pkg.github.com')
+for registry in "${registries[@]}"
+do
+  :
+  # Publish all packages, assuming there was a version bump
+  if npx lerna publish from-package --registry $registry  --yes; then
+    recordAndPrintDuration "Publish to $registry Completed"
+  else
+    echo "Failed to publish Twine.js to $registry"
+    exit 1
+  fi
+
+done
