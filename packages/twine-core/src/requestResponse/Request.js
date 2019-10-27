@@ -1,12 +1,29 @@
-const TwineBuilder    = require('../builder')
-const RequestTemplate = require('./RequestTemplate')
-const TwineError      = require('../utils/TwineError')
+const TwineBuilder          = require('../builder')
+const RequestTemplate       = require('./RequestTemplate')
+const TwineError            = require('../utils/TwineError')
+const { buildErrorMessage } = require('../utils')
 
 function changeErrorStackToExecutionStack(error, context) {
+  //If we aren't an error, promote object to an error
+  if (!(error instanceof Error)) {
+    error = new TwineError(`Twine Pipeline RemoteFaulted: ${error}`, context)
+  }
+  else if (!(error instanceof TwineError)) {
+    //If we _are_ an error, just update the errMessage with the TemplateName info.
+    //We do this instead of just converting everything to a TwineError so that developers can use their own
+    // error types and rely on that error flowing out of twine with the correct class-type (for instanceof checks)
+    error.message = buildErrorMessage(error.message, context)
+  }
+
+  //Get the internal stack and remove the first line from the stack.
+  //The first line is of the format: '{Error.name}: {Error.message}'
+  //We will instead place the the stack information underr the [TwineInternalStack] header.
+  const internalStack = error.stack.split('\n').slice(1).join('\n')
+
   const stackContextError = context.environment['twine.ExecutionStackContext']
   stackContextError.name = error.name
   stackContextError.message = error.message
-  error.stack = stackContextError.stack
+  error.stack = `${stackContextError.stack}\n[TwineInternalStack]\n${internalStack}`
 
   return error
 }
@@ -54,25 +71,21 @@ class Request extends TwineBuilder {
           const statusCode = context.environment['http.ResponseStatusCode']
 
           //If we faulted, but didn't handle the fault specifically, throw as such.
-          let err
           if (context.environment['twine.IsRemoteFaulted']) {
-            err = context.environment['twine.FaultException']
-            if (!(err instanceof TwineError)) {
-              err = new TwineError(`Twine Pipeline RemoteFaulted: ${err}`, context)
-            }
-          }
-          else {
-            err = new TwineError(`No handler exists for status code ${statusCode} in HTTP response.`, context)
+            throw context.environment['twine.FaultException']
           }
 
-          //TODO: Allow for users to chose to _not_ override the error with external context, but to instead use the raw internal error.
-          throw changeErrorStackToExecutionStack(err, context)
+          throw new TwineError(`No handler exists for status code ${statusCode} in HTTP response.`, context)
         }
       })
     })
 
     return super.buildTwine()(context)
-    .then(() => context.environment['media.ResponseContent'])
+      .then(() => context.environment['media.ResponseContent'])
+      .catch(err => {
+        //TODO: Allow for users to chose to _not_ override the error with external context, but to instead use the raw internal error.
+        throw changeErrorStackToExecutionStack(err, context)
+      })
   }
 
   getIdentifier() {
