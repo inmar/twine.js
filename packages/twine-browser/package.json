@@ -1,6 +1,6 @@
 {
   "name": "@inmar/twine-browser",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Browser version of twine",
   "main": "dist/index.js",
   "files": [
@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/inmar/twine.js#readme",
   "dependencies": {
-    "@inmar/twine-core": "^0.0.7"
+    "@inmar/twine-core": "^0.0.8"
   },
   "devDependencies": {
     "@babel/core": "^7.1.2",
