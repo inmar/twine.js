@@ -1,5 +1,4 @@
 const TwineError = require('../utils/TwineError')
-const { buildErrorMessage } = require('../utils/index')
 
 class TwineTimeoutError extends TwineError {
   /**
@@ -14,9 +13,7 @@ class TwineTimeoutError extends TwineError {
       ? messageOrTimeout
       : `Twine timeout of ${messageOrTimeout}ms reached`
 
-    const errMessage = buildErrorMessage(message, context, twineBuilder)
-
-    super(errMessage)
+    super(message, context, twineBuilder)
     Object.setPrototypeOf(this, TwineTimeoutError.prototype)
     this.name = 'TwineTimeoutError'
   }

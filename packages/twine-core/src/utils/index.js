@@ -25,22 +25,22 @@ function buildErrorMessage(message, context = null, twineBuilder = null) {
   //Accepts either a full twine context, or an environment context.
   const environment = context && (context.environment || context)
 
-  let errMessage
-  if (environment) {
+  let identifier = ''
+
+  const builderInstance = twineBuilder || (environment && environment['twine.RequestInstance'])
+  if (builderInstance) {
+    identifier = builderInstance.getIdentifier()
+  }
+
+  if (!identifier && environment) {
     const serviceName = environment['twine.ResourceServiceName']
     const templateName = environment['twine.RequestTemplateName']
-    if (templateName) {
-      errMessage = `[${serviceName} :: ${templateName}] ${message}`
-    }
-  }
-  else if (twineBuilder) {
-    const builderIdentifier = twineBuilder.getIdentifier()
-    if (builderIdentifier) {
-      errMessage = `[${builderIdentifier}] ${message}`
+    if (serviceName && templateName) {
+      identifier = `${serviceName} :: ${templateName}`
     }
   }
 
-  return errMessage || message
+  return identifier ? `[${identifier}] ${message}` : message
 }
 
 /**
