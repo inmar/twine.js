@@ -113,11 +113,11 @@ function ensureFlowTraceContext(context, next) {
   //If we do set it via begin/continueFlowTrace, the requestId will be set already.
   if (!context.environment['flowtrace.Origin']) {
     if (requestContext) {
-      console.debug("[FlowTrace]", "Added FlowTrace info from Global request context to twine request")
+      // console.debug("[FlowTrace]", "Added FlowTrace info from Global request context to twine request")
       flowTraceHelpers.continueFlowTrace(context, requestContext)
     }
     else {
-      console.debug("[FlowTrace]", "No FlowTrace info from request context; starting new FlowTrace")
+      // console.debug("[FlowTrace]", "No FlowTrace info from request context; starting new FlowTrace")
       flowTraceHelpers.beginFlowTrace(context)
     }
   }
