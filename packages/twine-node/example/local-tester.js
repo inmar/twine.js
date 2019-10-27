@@ -10,6 +10,7 @@ const sampleTemplate = sampleService.createRequestTemplate('sampleApiTemplate')
   .withURITemplate('todos/{id}')
   .withMethod('GET')
   .receivesJSON()
+  .withTimeout(200)
   .handleWhen(200, [
     Receives.json,
     resp => resp.title
@@ -25,7 +26,8 @@ const sampleTemplate = sampleService.createRequestTemplate('sampleApiTemplate')
     .maxAutoRetries(2)
     .delayRetryForMilliseconds(250)
     .escalateRetryDelayWith(previousDelay => previousDelay + 100)
-    .fallbackTo(ctx => { console.log(ctx['twine.FaultException']);throw new Error("Ran out of retries!")}))
+    .fallbackTo(ctx => { throw new Error("Ran out of retries!")})
+  )
 
 exports.handler = async (event, context) => {
   twine.instrumentation.setGlobalInstrumentationInfo("myTestApp", "123")
