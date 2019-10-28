@@ -7,6 +7,7 @@ phases:
   pre_build:
     commands:
       - bash codebuild/npm_configure.sh
+      - git config --global url."https://$GITHUB_TOKEN:x-oauth-basic@github.com/".insteadOf "https://github.com/"
   build:
     commands:
       - echo Build started on `date`
