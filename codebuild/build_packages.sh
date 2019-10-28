@@ -3,8 +3,8 @@
 # fail this script on first occurrence of an error
 set -e
 
-# Ensure we have all of the git history so that we have the tags.
-git fetch --tags --unshallow
+# Remove all references to git so that lerna will continue
+rm -rf .git
 
 # Import build helpers
 source './codebuild/helpers.sh'
