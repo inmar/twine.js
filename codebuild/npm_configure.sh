@@ -18,7 +18,7 @@ assert_variable_exists "NPM_TOKEN"
 assert_variable_exists "GITHUB_TOKEN"
 
 NPMRC="
-//registry.npmjs.org:_authToken=$NPM_TOKEN
+//registry.npmjs.org/:_authToken=$NPM_TOKEN
 //npm.pkg.github.com/:_authToken=$GITHUB_TOKEN
 
 init.author.name=$NEXUS_NAME
