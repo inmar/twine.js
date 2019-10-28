@@ -3,6 +3,9 @@
 # fail this script on first occurrence of an error
 set -e
 
+# Ensure we have all of the git history so that we have the tags.
+git fetch --tags --unshallow
+
 # Import build helpers
 source './codebuild/helpers.sh'
 
@@ -75,8 +78,7 @@ for registry in "${registries[@]}"
 do
   :
   # Publish all packages, assuming there was a version bump
-  echo "Attempting command: lerna publish from-package --registry $registry  --yes --git-head ${CODEBUILD_RESOLVED_SOURCE_VERSION}"
-  if npx lerna publish from-package --registry $registry  --yes --git-head ${CODEBUILD_RESOLVED_SOURCE_VERSION}; then
+  if npx lerna publish from-package --registry $registry  --yes; then
     recordAndPrintDuration "Publish to $registry Completed"
   else
     echo "Failed to publish Twine.js to $registry"
