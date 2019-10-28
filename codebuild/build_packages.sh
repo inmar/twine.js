@@ -75,6 +75,7 @@ for registry in "${registries[@]}"
 do
   :
   # Publish all packages, assuming there was a version bump
+  echo "Attempting command: lerna publish from-package --registry $registry  --yes --git-head ${CODEBUILD_RESOLVED_SOURCE_VERSION}"
   if npx lerna publish from-package --registry $registry  --yes --git-head ${CODEBUILD_RESOLVED_SOURCE_VERSION}; then
     recordAndPrintDuration "Publish to $registry Completed"
   else
