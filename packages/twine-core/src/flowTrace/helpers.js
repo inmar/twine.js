@@ -34,6 +34,7 @@ function setFlowTraceValues(context, originId, parentId, requestId) {
   if (requestHeaders) {
     requestHeaders["x-b3-traceid"] = originId
     requestHeaders["x-b3-spanid"]  = requestId
+    requestHeaders["x-b3-parentspanid"] = parentId
   }
 }
 

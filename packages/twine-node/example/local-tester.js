@@ -1,6 +1,5 @@
 const twine = require('../src')
-const { Receives, RetryStrategy, CloudwatchInstrumentor } = twine
-const { instrumentation: { withInstrumentation } } = twine
+const { Receives, RetryStrategy } = twine
 
 const sampleService = twine.createResourceService('jsonplaceholder.typicode.com')
   .usingHTTPS()
@@ -29,19 +28,20 @@ const sampleTemplate = sampleService.createRequestTemplate('sampleApiTemplate')
     .fallbackTo(ctx => { throw new Error("Ran out of retries!")})
   )
 
-exports.handler = async (event, context) => {
-  twine.instrumentation.setGlobalInstrumentationInfo("myTestApp", "123")
+//Example usage of precreated templates and pipelines
+async function main() {
+  try {
+    const todoId = 1
+    const resp = await sampleTemplate.createRequest()
+      .withParameters({id: todoId})
+      .execute()
 
-  const req = sampleTemplate.createRequest()
-    .withParameters({id: 1})
-    .execute()
-
-  const r = await req
-    
-  return {
-    statusCode: 200,
-    body: JSON.stringify('Hello from Lambda: ' + JSON.stringify(r)),
+    console.log(`Success! Text for todoId '${todoId}' = '${resp}'`)
+  }
+  catch (e) {
+    console.log("It failed!", e)
   }
 }
 
-exports.handler().then(console.log).catch(console.log)
+//Start program
+main()
