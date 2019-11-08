@@ -11,6 +11,19 @@ const flowTraceHelpers = require('./helpers')
  * The provided context info should be created based on headers received by this application from another calling
  * application. An application should capture headers and provide them as a flowTraceContext in the following format.
  *
+ * The system will take the provided context and make it available as needed to the Request headers and TwineContext.environment.
+ * The system also generates a new span/request id as a uuid v4 for the new request.
+ *
+ * Headers added to outgoing request and their source:
+ *  X-B3-TraceId: flowTraceContext.originId
+ *  X-B3-SpanId: generatedUUID
+ *  X-B3-ParentSpanId: flowTraceContext.parentId
+ *
+ * TwineContext.environment:
+ *  'flowtrace.Origin': flowTraceContext.originId
+ *  'flowtrace.Parent': flowTraceContext.parentId
+ *  'flowtrace.Request': generatedUUID
+ *
  * @example
  * function(request, response) {
  *   const headers = request.headers
@@ -20,18 +33,6 @@ const flowTraceHelpers = require('./helpers')
  *     parentId: headers['x-b3-spanid']
  *   }
  * }
- *
- * The system will take the provided context and make it available as needed to the Request headers and TwineContext.environment.
- * The system also generates a new span/request id as a uuid v4 for the new request.
- *
- * Headers:
- *  X-B3-TraceId: flowTraceContext.originId
- *  X-B3-SpanId: generatedUUID
- *
- * TwineContext.environment:
- *  'flowtrace.Origin': flowTraceContext.originId
- *  'flowtrace.Parent': flowTraceContext.parentId
- *  'flowtrace.Request': generatedUUID
  *
  * @param {FlowTraceContext} flowTraceContext - FlowTrace context from the request received by this application
  * @returns {Request}
