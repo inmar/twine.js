@@ -2,7 +2,7 @@
   "name": "@inmar/twine-browser",
   "version": "0.0.9",
   "description": "Browser version of twine",
-  "main": "dist/index.js",
+  "main": "dist/twine-browser.min.js",
   "files": [
     "dist",
     "src"
