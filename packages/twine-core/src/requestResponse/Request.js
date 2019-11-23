@@ -1,7 +1,7 @@
-const TwineBuilder          = require('../builder')
-const RequestTemplate       = require('./RequestTemplate')
-const TwineError            = require('../utils/TwineError')
-const { buildErrorMessage } = require('../utils')
+const TwineBuilder      = require('../builder')
+const RequestTemplate   = require('./RequestTemplate')
+const TwineError        = require('../utils/TwineError')
+const buildErrorMessage = require('../utils/buildErrorMessage')
 
 function changeErrorStackToExecutionStack(error, context) {
   //If we aren't an error, promote object to an error
