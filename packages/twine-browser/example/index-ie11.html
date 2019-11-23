@@ -5,6 +5,25 @@
   <title>Title</title>
   <script src="../dist/twine-browser.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-dark.min.css">
+  <script>
+    var polyfills = [
+      'fetch',
+      'Promise',
+      'Object.assign',
+      'Array.prototype.includes',
+      'String.prototype.includes',
+      'String.prototype.startsWith',
+      'String.prototype.endsWith',
+      'Number.isInteger',
+      'Symbol.iterator'
+    ]
+    var polyfillUrl = 'https://cdn.polyfill.io/v2/polyfill.js?features=' + polyfills.join(',')
+
+    var script = document.createElement('script');
+    script.setAttribute('src', polyfillUrl);
+    document.head.appendChild(script);
+  </script>
+  <!--<script src="https://static.portal.inmar.com/b2b-portal-polyfill-ie11/1/b2b-portal-polyfill-ie11.js"></script>-->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script>
 </head>
@@ -13,9 +32,10 @@
 <h3>Code</h3>
 <pre>
   <code id="editor" class="javascript hljs" contenteditable="">
-    const { Receives, RetryStrategy } = Twine
+    const Receives = Twine.Receives;
+    const RetryStrategy = Twine.RetryStrategy;
     const jsonplaceholderService = Twine.createResourceService('jsonplaceholder.typicode.com')
-        .usingHTTPS()
+        .usingHTTPS();
 
     const getPostTitleTemplate = jsonplaceholderService.createRequestTemplate('getPostById')
         .withoutInstrumentation()
@@ -25,27 +45,26 @@
         .receivesJSON()
         .handleWhen(200, [
           Receives.json,
-          resp => resp.title
+          function(resp) { return resp.title }
         ])
-        .handleWhen(404, (resp, ctx) => ({
+        .handleWhen(404, function (resp, ctx) { return {
           error: 'not found',
-          resp,
-          ctx
-        }))
+          resp: resp,
+          ctx: ctx
+        }})
         .withRetryStrategy(new RetryStrategy()
           .maxAutoRetries(4)
           .delayRetryForMilliseconds(250)
-          .escalateRetryDelayWith(previousDelay => previousDelay * 1.8)
-          .fallbackTo(ctx => ({ error: 'Exhausted Retries', ctx }))
-        )
+          .escalateRetryDelayWith(function(previousDelay) { return previousDelay * 1.8})
+          .fallbackTo(function(ctx) { return { error: 'Exhausted Retries', ctx: ctx } })
+        );
 
     const request1 = getPostTitleTemplate
         .createRequest()
-        .withParameters({id: 2})
+        .withParameters({id: 2});
 
     request1.execute()
         .then(console.log)
-        .catch(console.error)
 
     // // expect a 404 for this request
     // const request2 = getPostTitleTemplate
@@ -63,7 +82,7 @@
 <script>
   const runCode = function () {
     const editor = document.getElementById('editor')
-    eval(editor.innerText)
+    eval(editor.textContent)
   }
 </script>
 
