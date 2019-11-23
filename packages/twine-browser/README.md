@@ -62,14 +62,14 @@ There are many components and methods provided by Twine out-of-the-box. Below ar
 
 #### Example
 ```js
-const twine = require('@inmar/twine-node')
+const Twine = require('@inmar/twine-browser')
 const {
   Receives,
   RetryStrategy
-} = twine
+} = Twine
 
 //Note: You only need to construct the service once.
-const jsonPlaceholderService = twine.createResourceService('jsonplaceholder.typicode.com')
+const jsonPlaceholderService = Twine.createResourceService('jsonplaceholder.typicode.com')
   .usingHTTPS()
 
 //Note: You only need to construct the template once.

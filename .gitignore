@@ -1,7 +1,12 @@
 .DS_Store
 .idea/
+
+# npm
 node_modules/
-dist/
 
 # lerna
 lerna-debug.log
+
+# Generated during build process
+.size-snapshot.json
+dist/

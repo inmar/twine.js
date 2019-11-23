@@ -1,10 +1,13 @@
 //Setup platform specific helpers
-const Platform        = require('@inmar/twine-core/src/platform')
-const BrowserPlatform = require('./platform')
+import sharedTwine, { Platform } from '@inmar/twine-core'
+import BrowserPlatform from './platform/index.js'
 Platform.setPlatform(new BrowserPlatform())
 
-const sharedTwine = require('@inmar/twine-core/src')
+// const sharedTwine = require('@inmar/twine-core/src')
 
-module.exports = {
+const extendedTwine = {
   ...sharedTwine
 }
+
+export default extendedTwine
+// export default sharedTwine

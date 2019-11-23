@@ -1,4 +1,4 @@
-const TwineTimeoutError = require('@inmar/twine-core/src/timeout/TwineTimeoutError')
+import { TwineTimeoutError } from '@inmar/twine-core'
 
 /**
  *
@@ -7,7 +7,7 @@ const TwineTimeoutError = require('@inmar/twine-core/src/timeout/TwineTimeoutErr
  *
  * @returns {Promise<RequestResponse>}
  */
-module.exports = function createHttpRequest(requestOptions, context) {
+export default function createHttpRequest(requestOptions, context) {
   return Promise.race([
     getTimeoutPromise(requestOptions.timeout, context),
     fetch(requestOptions.url, {

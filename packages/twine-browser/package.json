@@ -2,15 +2,14 @@
   "name": "@inmar/twine-browser",
   "version": "0.0.10",
   "description": "Browser version of twine",
-  "main": "dist/twine-browser.min.js",
+  "main": "dist/twine-browser.cjs.js",
+  "module": "dist/twine-browser.esm.js",
   "files": [
     "dist",
     "src"
   ],
   "scripts": {
-    "dev": "webpack --progress --colors --watch",
-    "build": "npx webpack",
-    "build-size": "webpack --showBundleSize"
+    "build": "npx rollup -c"
   },
   "repository": {
     "type": "git",
@@ -26,19 +25,20 @@
   },
   "homepage": "https://github.com/inmar/twine.js#readme",
   "dependencies": {
+    "@babel/runtime": "^7.7.2",
     "@inmar/twine-core": "^0.0.10"
   },
   "devDependencies": {
     "@babel/core": "^7.1.2",
+    "@babel/plugin-external-helpers": "^7.7.4",
     "@babel/plugin-transform-modules-commonjs": "^7.4.4",
     "@babel/plugin-transform-runtime": "^7.1.0",
     "@babel/preset-env": "^7.1.0",
-    "@babel/runtime": "^7.1.2",
-    "babel-loader": "^8.0.4",
-    "webpack": "^4.32.2",
-    "webpack-bundle-analyzer": "^3.0.3",
-    "webpack-cli": "^3.3.2",
-    "webpack-dev-server": "^3.1.14",
-    "yargs": "^13.2.4"
+    "rollup": "^1.26.4",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-size-snapshot": "^0.10.0",
+    "rollup-plugin-terser": "^5.1.2"
   }
 }
