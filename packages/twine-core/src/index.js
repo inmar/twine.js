@@ -20,6 +20,7 @@ const AbstractPlatform     = require('./platform/AbstractPlatform')
 const TwineError        = require('./utils/TwineError')
 const TwineTimeoutError = require('./timeout/TwineTimeoutError')
 
+const Platform         = require('./platform')
 const instrumentation  = require('./flowTrace/instrumentation')
 
 /**
@@ -51,5 +52,6 @@ module.exports = {
   TwineError,
   TwineTimeoutError,
 
+  Platform,
   instrumentation,
 }
