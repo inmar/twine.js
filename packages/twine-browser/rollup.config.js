@@ -14,7 +14,10 @@ const defaultPlugins = [
   resolve({
     mainFields: ['browser', 'module', 'main'],
     customResolveOptions: {
-      moduleDirectory: path.resolve(__dirname, 'node_modules')
+      moduleDirectory: [
+        path.resolve(__dirname, 'node_modules'),
+        path.resolve(__dirname, 'node_modules', '@inmar', 'twine-core', 'node_modules')
+      ]
     }
   }),
   commonjs(),
