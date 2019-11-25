@@ -7,7 +7,7 @@ const { assert } = require('../utils')
  *
  * Also handles logic related to marking a node bad.
  */
-class AbstractCluster extends AutoBinder {
+module.exports = class AbstractCluster extends AutoBinder {
   constructor(serviceName) {
     super()
 
