@@ -119,7 +119,7 @@ ResourceService.prototype.usingServiceResolver = function(resolver) {
           throw new TwineError(`Failed to resolve host from serviceName: ${serviceName}`, context)
         }
 
-        context.environment['http.Host'] = host
+        context.environment['twine.Host'] = host
       })
       .then(next)
   })
