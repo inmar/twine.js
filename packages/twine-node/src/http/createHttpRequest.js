@@ -1,15 +1,15 @@
-const http    = require('http')
-const https   = require('https')
-const zlib    = require('zlib')
+const http = require('http')
+const https = require('https')
+const zlib = require('zlib')
 const process = require('process')
 
-const { TwineTimeoutError } = require('@inmar/twine-core')
+const { TwineError, TwineTimeoutError } = require('@inmar/twine-core')
 
 const httpAgents = {}
 
 function getRequesterAgent(protocol, requester) {
   let agent = httpAgents[protocol]
-  if(!agent) {
+  if (!agent) {
     agent = requester.Agent({
       keepAlive: true
     })
@@ -27,17 +27,25 @@ function getRequesterAgent(protocol, requester) {
  * @returns {Promise<RequestResponse>}
  */
 module.exports = function createHttpRequest(requestOptions, context) {
-  const requester = requestOptions.protocol === 'https'
-    ? https
-    : http
+  let requester
+  switch (requestOptions.protocol) {
+    case "https":
+      requester = https
+      break
+    case "http":
+      requester = http
+      break
+    default:
+      throw new TwineError(`Unrecognized requestOptions.protocol '${requestOptions.protocol}'. Did your twine request template not use either 'usingHttp' or 'usingHttps'?`)
+  }
 
   const options = {
     hostname: requestOptions.host,
-    port:     requestOptions.port,
-    path:     '/' + requestOptions.path, //Node requires a leading `/`
-    method:   requestOptions.method,
-    headers:  requestOptions.headers,
-    agent:    getRequesterAgent(requestOptions.protocol, requester)
+    port: requestOptions.port,
+    path: '/' + requestOptions.path, //Node requires a leading `/`
+    method: requestOptions.method,
+    headers: requestOptions.headers,
+    agent: getRequesterAgent(requestOptions.protocol, requester)
   }
 
   // Connect timeout for the socket
@@ -76,7 +84,7 @@ module.exports = function createHttpRequest(requestOptions, context) {
     const [seconds, nanoseconds] = process.hrtime(hrStartTime)
     context.environment['tcp.ConnectTimeUs'] = Math.floor(((seconds * 1e9) + nanoseconds) / 1e3)
 
-    if (options.protocol === 'http') {
+    if (requester === http) {
       clearTimeout(connectTimer)
       connectTimer = undefined
 
@@ -91,7 +99,7 @@ module.exports = function createHttpRequest(requestOptions, context) {
     const [seconds, nanoseconds] = process.hrtime(hrStartTime)
     context.environment['tcp.SecureConnectTimeUs'] = Math.floor(((seconds * 1e9) + nanoseconds) / 1e3)
 
-    if (options.protocol === 'https') {
+    if (requester === https) {
       clearTimeout(connectTimer)
       connectTimer = undefined
 
@@ -255,19 +263,19 @@ module.exports = function createHttpRequest(requestOptions, context) {
 
     request.end()
   })
-  .then(resp => {
-    response = resp
+    .then(resp => {
+      response = resp
 
-    return {
-      headers:    resp.headers,
-      statusCode: resp.statusCode,
-      statusText: resp.statusMessage,
-      getContent: () => getResponseContent(resp).finally(onComplete)
-    }
-  })
-  .catch(err => {
-    onComplete()
-    throw err
-  })
+      return {
+        headers: resp.headers,
+        statusCode: resp.statusCode,
+        statusText: resp.statusMessage,
+        getContent: () => getResponseContent(resp).finally(onComplete)
+      }
+    })
+    .catch(err => {
+      onComplete()
+      throw err
+    })
 
 }
