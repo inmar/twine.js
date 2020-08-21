@@ -1,6 +1,6 @@
-const http = require('http')
-const https = require('https')
-const zlib = require('zlib')
+const http    = require('http')
+const https   = require('https')
+const zlib    = require('zlib')
 const process = require('process')
 
 const { TwineError, TwineTimeoutError } = require('@inmar/twine-core')
@@ -9,7 +9,7 @@ const httpAgents = {}
 
 function getRequesterAgent(protocol, requester) {
   let agent = httpAgents[protocol]
-  if (!agent) {
+  if(!agent) {
     agent = requester.Agent({
       keepAlive: true
     })
@@ -41,11 +41,11 @@ module.exports = function createHttpRequest(requestOptions, context) {
 
   const options = {
     hostname: requestOptions.host,
-    port: requestOptions.port,
-    path: '/' + requestOptions.path, //Node requires a leading `/`
-    method: requestOptions.method,
-    headers: requestOptions.headers,
-    agent: getRequesterAgent(requestOptions.protocol, requester)
+    port:     requestOptions.port,
+    path:     '/' + requestOptions.path, //Node requires a leading `/`
+    method:   requestOptions.method,
+    headers:  requestOptions.headers,
+    agent:    getRequesterAgent(requestOptions.protocol, requester)
   }
 
   // Connect timeout for the socket
@@ -263,19 +263,19 @@ module.exports = function createHttpRequest(requestOptions, context) {
 
     request.end()
   })
-    .then(resp => {
-      response = resp
+  .then(resp => {
+    response = resp
 
-      return {
-        headers: resp.headers,
-        statusCode: resp.statusCode,
-        statusText: resp.statusMessage,
-        getContent: () => getResponseContent(resp).finally(onComplete)
-      }
-    })
-    .catch(err => {
-      onComplete()
-      throw err
-    })
+    return {
+      headers:    resp.headers,
+      statusCode: resp.statusCode,
+      statusText: resp.statusMessage,
+      getContent: () => getResponseContent(resp).finally(onComplete)
+    }
+  })
+  .catch(err => {
+    onComplete()
+    throw err
+  })
 
 }
