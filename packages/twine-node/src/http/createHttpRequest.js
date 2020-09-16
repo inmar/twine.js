@@ -11,7 +11,7 @@ function getRequesterAgent(protocol, requester) {
   let agent = httpAgents[protocol]
   if(!agent) {
     agent = requester.Agent({
-      keepAlive: true
+      keepAlive: false
     })
     httpAgents[protocol] = agent
   }
