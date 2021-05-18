@@ -32,9 +32,25 @@ function resolveProvider(provider) {
     })
 }
 
+/**
+ * The native function 'encodeURIComponent' does not encode certain characters mentioned in RFC 3986 (https://datatracker.ietf.org/doc/html/rfc3986)
+ * Some APIs do require these characters to be encoded
+ * This function was copied directly from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent
+ * 
+ * @param {string} str
+ * 
+ * @returns {string}
+ */
+function fixedEncodeURIComponent(str) {
+  return encodeURIComponent(str).replace(/[!'()*]/g, function (c) {
+    return '%' + c.charCodeAt(0).toString(16);
+  });
+}
+
 module.exports = {
   assert,
-  resolveProvider
+  resolveProvider,
+  fixedEncodeURIComponent,
 }
 
 /**

@@ -5,7 +5,7 @@ const TwineError      = require('../utils/TwineError')
 const HttpHandler     = require('./HttpHandler')
 const Platform        = require('../platform')
 
-const { resolveProvider, assert } = require('../utils')
+const { resolveProvider, assert, fixedEncodeURIComponent } = require('../utils')
 
 /**
  * Sets the request protocol to HTTP
@@ -556,7 +556,7 @@ function addURITemplate(templateProvider, objectToAddComponentTo) {
             continue
           }
 
-          path += `${encodeURIComponent(key)}=${encodeURIComponent(val)}&`
+          path += `${fixedEncodeURIComponent(key)}=${fixedEncodeURIComponent(val)}&`
         }
 
         //Remove the last query parameter delimiter from the path as it is unneeded.
