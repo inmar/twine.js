@@ -25,4 +25,7 @@ init.author.name=$NEXUS_NAME
 init.author.email=$NEXUS_EMAIL
 email=$NEXUS_EMAIL
 progress=false"
+
 echo "$NPMRC" > ~/.npmrc
+
+cat ~/.npmrc
