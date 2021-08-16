@@ -59,6 +59,7 @@ jobs:
           key: node-modules-${{ hashFiles('app/package-lock.json') }}
 
       - name: Build and Publish App
-        run: |
-          ci/npm_configure.sh && \
-          build_packages.sh
+        # run: |
+        #   ci/npm_configure.sh && \
+        #   build_packages.sh
+        run: build_packages.sh

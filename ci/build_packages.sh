@@ -66,13 +66,6 @@ done
 # Publish #
 ###########
 
-# Don't publish anything if this is a PR.
-if [[ "${CODEBUILD_SOURCE_VERSION}" =~ ^pr/.+$ ]]
-then
-  echo "Skipping publishing actions as this build was triggered by a Pull Request"
-  exit
-fi
-
 registries=('https://registry.npmjs.org' 'https://npm.pkg.github.com')
 for registry in "${registries[@]}"
 do
