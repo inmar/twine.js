@@ -71,10 +71,14 @@ for registry in "${registries[@]}"
 do
   :
   # Publish all packages, assuming there was a version bump
-  if npx lerna publish from-package --registry $registry  --yes; then
+  npx lerna publish from-package --registry $registry  --yes
+  status_code=$?
+
+  if [ $status_code -eq 0 ] ; then
     recordAndPrintDuration "Publish to $registry Completed"
   else
     echo "Failed to publish Twine.js to $registry"
+    echo "Command exited with code $status_code"
     exit 1
   fi
 
