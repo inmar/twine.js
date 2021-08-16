@@ -3,9 +3,6 @@
 # fail this script on first occurrence of an error
 set -e
 
-# Remove all references to git so that lerna will continue
-rm -rf .git
-
 # Import build helpers
 source './ci/helpers.sh'
 
@@ -71,14 +68,10 @@ for registry in "${registries[@]}"
 do
   :
   # Publish all packages, assuming there was a version bump
-  npx lerna publish from-package --registry $registry  --yes
-  status_code=$?
-
-  if [ $status_code -eq 0 ] ; then
+  if npx lerna publish from-package --registry $registry  --yes ; then
     recordAndPrintDuration "Publish to $registry Completed"
   else
     echo "Failed to publish Twine.js to $registry"
-    echo "Command exited with code $status_code"
     exit 1
   fi
 
