@@ -65,5 +65,5 @@ jobs:
         env:
           NEXUS_NAME: AO Service Account
           NEXUS_EMAIL: PSNApplicationOperations@inmar.com
-          NPM_TOKEN: ${{ secrets.ERETAIL_PACKAGES_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.ERETAIL_NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ERETAIL_PACKAGES_TOKEN }}
