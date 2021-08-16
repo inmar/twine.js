@@ -2,7 +2,7 @@ name: Build
 
 on:
   push:
-    branches: [ github-actions ]
+    branches: [ master ]
 
 env:
   CANONICAL_APP_NAME: twine.js
