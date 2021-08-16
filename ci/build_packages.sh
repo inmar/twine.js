@@ -66,12 +66,14 @@ done
 # Publish #
 ###########
 
-registries=('https://registry.npmjs.org' 'https://npm.pkg.github.com')
+# registries=('https://registry.npmjs.org' 'https://npm.pkg.github.com')
+registries=('https://registry.npmjs.org')
 for registry in "${registries[@]}"
 do
   :
   # Publish all packages, assuming there was a version bump
-  npx lerna publish from-package --registry $registry  --yes
+  # npx lerna publish from-package --registry $registry  --yes
+  npx lerna --version
   status_code=$?
 
   if [ $status_code -eq 0 ] ; then
