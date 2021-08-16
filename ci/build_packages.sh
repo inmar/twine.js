@@ -75,9 +75,9 @@ do
   npx lerna publish from-package --registry $registry  --yes
   status_code=$?
 
-  if [ $status_code -eq 0 ] ; then
+  if [ "$status_code" == 0 ] ; then
     recordAndPrintDuration "Publish to $registry Completed"
-  elif [ $status_code -eq 128 ] ; then
+  elif [ "$status_code" == 128 ] ; then
     # This error code happens on the ci runner with lerna 4.0.0, but it's still a success
     recordAndPrintDuration "Publish to $registry Completed"
   else
