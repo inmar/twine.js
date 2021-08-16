@@ -59,7 +59,11 @@ jobs:
           key: node-modules-${{ hashFiles('app/package-lock.json') }}
 
       - name: Build and Publish App
-        # run: |
-        #   ci/npm_configure.sh && \
-        #   ci/build_packages.sh
-        run: ci/build_packages.sh
+        run: |
+          ci/npm_configure.sh && \
+          ci/build_packages.sh
+        env:
+          NEXUS_NAME: AO Service Account
+          NEXUS_EMAIL: PSNApplicationOperations@inmar.com
+          NPM_TOKEN: ${{ secrets.ERETAIL_PACKAGES_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
