@@ -7,7 +7,7 @@ set -e
 rm -rf .git
 
 # Import build helpers
-source './codebuild/helpers.sh'
+source './ci/helpers.sh'
 
 #####################
 # Install and Setup #
@@ -44,12 +44,12 @@ do
   if hasNpmScript "build"; then
     echo "Building $PACKAGE_NAME (npm build)..."
     if npm run build
-     then
-       recordAndPrintDuration "Building of $PACKAGE_NAME complete"
-     else
-       recordAndPrintDuration "Building of $PACKAGE_NAME failed"
-       exit 1
-     fi
+      then
+        recordAndPrintDuration "Building of $PACKAGE_NAME complete"
+      else
+        recordAndPrintDuration "Building of $PACKAGE_NAME failed"
+        exit 1
+      fi
   else
     echo "Skipping 'npm build' for $PACKAGE_NAME as it isn't defined"
   fi
@@ -65,13 +65,6 @@ done
 ###########
 # Publish #
 ###########
-
-# Don't publish anything if this is a PR.
-if [[ "${CODEBUILD_SOURCE_VERSION}" =~ ^pr/.+$ ]]
-then
-  echo "Skipping publishing actions as this build was triggered by a Pull Request"
-  exit
-fi
 
 registries=('https://registry.npmjs.org' 'https://npm.pkg.github.com')
 for registry in "${registries[@]}"
