@@ -1,27 +1,29 @@
 name: Build
-
 on:
   push:
     branches: [ master, hotfix/* ]
-
 env:
   CANONICAL_APP_NAME: twine.js
-
 jobs:
-
   build:
     name: Build
     runs-on: ubuntu-18.04
     steps:
-
       # Setup
-
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Checkout private actions
+        uses: actions/checkout@v2
+        with:
+          repository: inmar/eretail_github_actions
+          ref: v1
+          token: ${{ secrets.ERETAIL_ACTIONS_TOKEN }}
+          path: ./inmar/eretail_github_actions
+
       - name: Setup the build
         id: setup
-        uses: inmar/eretail_github_actions/actions/build-setup@v1
+        uses: ./inmar/eretail_github_actions/actions/build-setup
         with:
           canonical-app-name: ${{ env.CANONICAL_APP_NAME }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -33,15 +35,12 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '14'
-
       # Build
-
       - name: Cache node modules
         uses: actions/cache@v2
         with:
           path: ~/.npm
           key: node-modules-${{ hashFiles('app/package-lock.json') }}
-
       - name: Build and Publish App
         run: |
           ci/npm_configure.sh && \
