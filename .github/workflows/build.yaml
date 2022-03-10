@@ -18,7 +18,7 @@ jobs:
         with:
           repository: inmar/eretail_github_actions
           ref: v1
-          token: ${{ secrets.ERETAIL_ACTIONS_TOKEN }}
+          token: ${{ secrets.ERETAIL_PACKAGES_TOKEN }}
           path: ./inmar/eretail_github_actions
 
       - name: Setup the build
