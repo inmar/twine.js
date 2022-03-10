@@ -21,7 +21,7 @@ jobs:
 
       - name: Setup the build
         id: setup
-        uses: ./inmar/eretail_github_actions/actions/build-setup
+        uses: inmar/eretail_github_actions/actions/build-setup@v1
         with:
           canonical-app-name: ${{ env.CANONICAL_APP_NAME }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
