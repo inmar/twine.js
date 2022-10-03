@@ -7,6 +7,8 @@ const { TwineError, TwineTimeoutError } = require('@inmar/twine-core')
 
 const httpAgents = {}
 
+const DEFAULT_SOCKET_CONNECT_TIMEOUT = 3000
+
 function getRequesterAgent(protocol, requester) {
   let agent = httpAgents[protocol]
   if(!agent) {
@@ -52,7 +54,7 @@ module.exports = function createHttpRequest(requestOptions, context) {
   const providedConnectTimeout = context.environment['net.ConnectTimeout']
   const connectTimeout = providedConnectTimeout !== undefined
     ? providedConnectTimeout
-    : 500
+    : DEFAULT_SOCKET_CONNECT_TIMEOUT
 
   // Overall timeout for the request
   let timeoutTime = null //Set just before request is made
