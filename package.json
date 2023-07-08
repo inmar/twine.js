@@ -2,7 +2,7 @@
   "name": "twine.js",
   "private": true,
   "devDependencies": {
-    "lerna": "^4.0.0"
+    "lerna": "^7.1.1"
   },
   "scripts": {
     "postinstall": "npx lerna link && npx lerna bootstrap"
